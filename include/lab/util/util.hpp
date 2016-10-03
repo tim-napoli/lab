@@ -8,6 +8,8 @@
 #ifndef _lab_util_hpp_
 #define _lab_util_hpp_
 
+#include "lab/util/exception.hpp"
+
 namespace lab {
 
 namespace util {
