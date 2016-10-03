@@ -10,6 +10,7 @@
 
 #include "lab/util/exception.hpp"
 #include "lab/util/value.hpp"
+#include "lab/util/result.hpp"
 
 namespace lab {
 
