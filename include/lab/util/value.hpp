@@ -33,14 +33,14 @@ class value {
      * @return The value to the given type.
      */
     template <typename T>
-    const T get_value() const {
+    const T get() const {
         std::istringstream is(_value);
         T value;
         is >> value;
         return value;
     }
 
-    const std::string& get_value() {
+    const std::string& get() {
         return _value;
     }
 
@@ -48,13 +48,13 @@ class value {
      * Set the value from any type.
      */
     template <typename T>
-    void set_value(const T& value) {
+    void set(const T& value) {
         std::ostringstream os;
         os << value;
         _value = os.str();
     }
 
-    void set_value(const std::string& value) {
+    void set(const std::string& value) {
         _value = value;
     }
 
@@ -64,7 +64,7 @@ class value {
     template <typename T>
     static util::value build(const T& value) {
         util::value v;
-        v.set_value<T>(value);
+        v.set<T>(value);
         return v;
     }
 };

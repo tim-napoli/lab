@@ -22,13 +22,13 @@ class EventTestSuite : public CxxTest::TestSuite {
         TS_ASSERT(evt.get_type() == 24);
 
         evt.set_value("first-value", value::build<int>(32));
-        TS_ASSERT(evt.get_value("first-value").get_value<int>() == 32);
+        TS_ASSERT(evt.get_value("first-value").get<int>() == 32);
 
         evt.set_value("second-value", value::build<double>(3.14));
-        TS_ASSERT(evt.get_value("second-value").get_value<double>() == 3.14);
+        TS_ASSERT(evt.get_value("second-value").get<double>() == 3.14);
 
         evt.set_value("first-value", value::build<double>(3.14));
-        TS_ASSERT(evt.get_value("first-value").get_value<double>() == 3.14);
+        TS_ASSERT(evt.get_value("first-value").get<double>() == 3.14);
 
         TS_ASSERT_THROWS(evt.get_value("i-dont-exist"), exception);
     }

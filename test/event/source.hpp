@@ -24,7 +24,7 @@ class alice : public listener {
     }
 
     void notify(const event& evt) throw(exception) {
-        _message = evt.get_value("message").get_value<std::string>();
+        _message = evt.get_value("message").get<std::string>();
     }
 };
 

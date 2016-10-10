@@ -15,11 +15,11 @@ class ValueTestSuite : public CxxTest::TestSuite {
 
     void testValueConversion() {
         value v = value::build(32);
-        TS_ASSERT(v.get_value() == "32");
-        TS_ASSERT(v.get_value<int>() == 32);
-        v.set_value(32.325);
-        TS_ASSERT(v.get_value() == "32.325");
-        TS_ASSERT(v.get_value<double>() == 32.325);
+        TS_ASSERT(v.get() == "32");
+        TS_ASSERT(v.get<int>() == 32);
+        v.set(32.325);
+        TS_ASSERT(v.get() == "32.325");
+        TS_ASSERT(v.get<double>() == 32.325);
     }
 };
 
