@@ -50,6 +50,17 @@ class ParserTestSuite : public CxxTest::TestSuite {
         TS_ASSERT_THROWS(parse_char(input, 'b'), exception)
     }
 
+    void testOneOfChars() {
+        std::stringstream input("bx");
+        try {
+            char read = parse_one_of_chars(input, "abc");
+            TS_ASSERT(read == 'b');
+        } catch (exception ex) {
+            TS_ASSERT(false);
+        }
+        TS_ASSERT_THROWS(parse_one_of_chars(input, "abc"), exception);
+    }
+
     void testParserWord() {
         std::stringstream input("blectrejojoxyz");
         try {

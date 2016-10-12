@@ -12,6 +12,16 @@ char parse_char(std::istream& input, char c)
     return c;
 }
 
+char parse_one_of_chars(std::istream& input, const std::string& allowed)
+        throw(exception)
+{
+    char read = input.get();
+    if (allowed.find(read) == std::string::npos) {
+        throw exception(input, "cannot parse one of char");
+    }
+    return read;
+}
+
 std::string parse_word(std::istream& input, const std::string& word)
         throw(exception)
 {

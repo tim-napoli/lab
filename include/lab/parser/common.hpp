@@ -21,6 +21,15 @@ char parse_char(std::istream& input, char c)
         throw(exception);
 
 /**
+ * Parse one of the characters in `allowed` on `input`. `input` is consumed.
+ * @return the parsed char.
+ * @throw a parser::exception if `input` doesn't start with one char
+ *        of `allowed`.
+ */
+char parse_one_of_chars(std::istream& input, const std::string& allowed)
+        throw(exception);
+
+/**
  * Parse the word `word` on `input`. `input` is consumed.
  * @return the parsed word.
  * @throw a parser::exception if `input` doesn't start with `word`.
