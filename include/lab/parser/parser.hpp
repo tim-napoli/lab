@@ -124,6 +124,24 @@ int skip_many(std::istream& input, function<T, Args...> parser,
     return count;
 }
 
+/**
+ * Try to parse on `input` with the `parser` function. If `parser` fail,
+ * returns `deflt`, otherwise, returns the parser result.
+ * This function doesn't consume characters if `parser` failed.
+ */
+template <typename T, typename... Args>
+T parse_optional(std::istream& input, T deflt, function<T, Args...> parser,
+                 Args... args)
+{
+    std::streampos initial_pos = input.tellg();
+    try {
+        return parser(input, args...);
+    } catch (exception ex) {
+        input.seekg(initial_pos, input.beg);
+        return deflt;
+    }
+}
+
 }}
 
 #endif

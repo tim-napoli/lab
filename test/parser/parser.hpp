@@ -152,5 +152,20 @@ class ParserTestSuite : public CxxTest::TestSuite {
             TS_ASSERT(false);
         }
     }
+
+    void testParseOptional() {
+        std::stringstream input("a");
+        char read = parse_optional<char, char>(
+            input, 'x', (function<char, char>)parse_char, 'x'
+        );
+        TS_ASSERT(read == 'x');
+
+        try {
+            read = parse_char(input, 'a');
+            TS_ASSERT(read == 'a');
+        } catch (exception ex) {
+            TS_ASSERT(false);
+        }
+    }
 };
 
