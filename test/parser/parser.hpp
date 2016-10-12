@@ -61,6 +61,27 @@ class ParserTestSuite : public CxxTest::TestSuite {
         TS_ASSERT_THROWS(parse_one_of_chars(input, "abc"), exception);
     }
 
+    void testParseSpace() {
+        std::stringstream input(" \n\t\v\f\rx");
+        try {
+            char read = parse_space(input);
+            TS_ASSERT(read == ' ');
+            read = parse_space(input);
+            TS_ASSERT(read == '\n');
+            read = parse_space(input);
+            TS_ASSERT(read == '\t');
+            read = parse_space(input);
+            TS_ASSERT(read == '\v');
+            read = parse_space(input);
+            TS_ASSERT(read == '\f');
+            read = parse_space(input);
+            TS_ASSERT(read == '\r');
+        } catch (exception ex) {
+            TS_ASSERT(false);
+        }
+        TS_ASSERT_THROWS(parse_space(input), exception);
+    }
+
     void testParserWord() {
         std::stringstream input("blectrejojoxyz");
         try {

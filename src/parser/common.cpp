@@ -1,3 +1,4 @@
+#include <cctype>
 #include "lab/parser/common.hpp"
 
 namespace lab { namespace parser {
@@ -18,6 +19,16 @@ char parse_one_of_chars(std::istream& input, const std::string& allowed)
     char read = input.get();
     if (allowed.find(read) == std::string::npos) {
         throw exception(input, "cannot parse one of char");
+    }
+    return read;
+}
+
+char parse_space(std::istream& input)
+        throw(exception)
+{
+    char read = input.get();
+    if (!isspace(read)) {
+        throw exception(input, "cannot parse space");
     }
     return read;
 }

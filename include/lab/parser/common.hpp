@@ -30,6 +30,15 @@ char parse_one_of_chars(std::istream& input, const std::string& allowed)
         throw(exception);
 
 /**
+ * Parse one space character (' ', '\t', '\n', '\v', '\f', '\r').
+ * `input` is consumed.
+ * @return the parsed space char.
+ * @throw a parser::exception if `input` doesn't start with a space character.
+ */
+char parse_space(std::istream& input)
+        throw(exception);
+
+/**
  * Parse the word `word` on `input`. `input` is consumed.
  * @return the parsed word.
  * @throw a parser::exception if `input` doesn't start with `word`.
