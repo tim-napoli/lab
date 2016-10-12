@@ -129,5 +129,30 @@ class JsonTestSuite : public CxxTest::TestSuite {
             TS_ASSERT(ex.get_row() == 1);
         }
     }
+
+    void testParseInt() {
+        try {
+            std::stringstream input("02587560");
+            std::string result = parse_int(input);
+            TS_ASSERT(result == "02587560");
+        } catch (lab::parser::exception ex) {
+            TS_ASSERT(false);
+        }
+
+        try {
+            std::stringstream input("-02587560");
+            std::string result = parse_int(input);
+            TS_ASSERT(result == "-02587560");
+        } catch (lab::parser::exception ex) {
+            TS_ASSERT(false);
+        }
+
+        try {
+            std::stringstream input("bob");
+            parse_int(input);
+            TS_ASSERT(false);
+        } catch (lab::parser::exception ex) {
+        }
+    }
 };
 

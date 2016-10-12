@@ -190,6 +190,38 @@ std::string parse_string(std::istream& input)
     return str;
 }
 
+std::string parse_int(std::istream& input)
+        throw(parser::exception)
+{
+    std::string result = "";
+
+    /* XXX This in not really what we could call an elegant way of
+     *     doing it.
+     */
+    result += parser::parse_optional<std::string, std::string>(
+        input, "",
+        (parser::function<std::string, std::string>)parser::parse_word,
+        "-"
+    );
+
+    int count = 0;
+    while (1) {
+        try {
+            result += parser::parse_one_of_chars(input, "0123456789");
+            count++;
+        } catch (parser::exception ex) {
+            input.seekg(-1, input.cur);
+            break;
+        }
+    }
+
+    if (count == 0) {
+        throw parser::exception(input, "cannot parse integer");
+    }
+
+    return result;
+}
+
 /* ------------------------------------------------------------------------- */
 
 }}
