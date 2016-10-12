@@ -222,6 +222,18 @@ std::string parse_int(std::istream& input)
     return result;
 }
 
+std::string parse_frac(std::istream& input)
+        throw(parser::exception)
+{
+    std::string result = "";
+    result += parser::parse_char(input, '.');
+    // We don't need an integer behind the '.'.
+    result += parser::parse_optional<std::string>(
+        input, "", (parser::function<std::string>)parse_int
+    );
+    return result;
+}
+
 /* ------------------------------------------------------------------------- */
 
 }}

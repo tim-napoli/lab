@@ -154,5 +154,30 @@ class JsonTestSuite : public CxxTest::TestSuite {
         } catch (lab::parser::exception ex) {
         }
     }
+
+    void testParseFrac() {
+        try {
+            std::stringstream input(".123456");
+            std::string result = parse_frac(input);
+            TS_ASSERT(result == ".123456");
+        } catch (lab::parser::exception ex) {
+            TS_ASSERT(false);
+        }
+
+        try {
+            std::stringstream input(".somethingelse");
+            std::string result = parse_frac(input);
+            TS_ASSERT(result == ".");
+        } catch (lab::parser::exception ex) {
+            TS_ASSERT(false);
+        }
+
+        try {
+            std::stringstream input("somethingelse");
+            parse_frac(input);
+            TS_ASSERT(false);
+        } catch (lab::parser::exception ex) {
+        }
+    }
 };
 

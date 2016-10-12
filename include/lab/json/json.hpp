@@ -140,6 +140,9 @@ std::string parse_string(std::istream& input)
 std::string parse_int(std::istream& input)
         throw(parser::exception);
 
+std::string parse_frac(std::istream& input)
+        throw(parser::exception);
+
 }}
 
 #endif
