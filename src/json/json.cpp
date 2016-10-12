@@ -1,5 +1,6 @@
 #include <cassert>
 #include "lab/json/json.hpp"
+#include "lab/parser/common.hpp"
 
 namespace lab { namespace json {
 
@@ -142,6 +143,54 @@ json& json::operator[](int index)
 {
     return get_element(index);
 }
+
+/* parser ------------------------------------------------------------------ */
+
+std::string parse_string(std::istream& input)
+        throw(parser::exception)
+{
+    std::streampos initial_pos = input.tellg();
+    parser::parse_char(input, '"');
+
+    std::string str = "";
+    char c = input.get();
+    while (!input.eof() && c != '"') {
+        if (c == '\\') {
+            c = input.get();
+            switch (c) {
+              case '"' : str += '\"'; break;
+              case '\\': str += '\\'; break;
+              case 'b' : str += '\b'; break;
+              case 'f' : str += '\f'; break;
+              case 'n' : str += '\n'; break;
+              case 'r' : str += '\r'; break;
+              case 't' : str += '\t'; break;
+              case 'u' :
+                throw parser::exception(input,
+                                        "this parser doesn't support the \\u "
+                                        "character");
+              default:
+                throw parser::exception(input, "unknown control character ");
+            }
+        } else {
+            str += c;
+        }
+        c = input.get();
+    }
+
+    if (c != '"') {
+        // We rewind to have a better error message.
+        // XXX Maybe we should add a exception(line, row, msg) constructor
+        //     to don't have to do such things (with some function that will be
+        //     able to get istream line and row to ease the process).
+        input.seekg(initial_pos, input.beg);
+        throw parser::exception(input, "unclosed string");
+    }
+
+    return str;
+}
+
+/* ------------------------------------------------------------------------- */
 
 }}
 

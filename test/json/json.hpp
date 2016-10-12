@@ -1,5 +1,6 @@
 #include <cxxtest/TestSuite.h>
 #include "lab/json/json.hpp"
+#include "lab/parser/parser.hpp"
 
 using namespace lab::json;
 using namespace lab::util;
@@ -81,6 +82,52 @@ class JsonTestSuite : public CxxTest::TestSuite {
         TS_ASSERT(my_object["position"]["y"].get_value().get<int>() == 48);
         TS_ASSERT(my_object["numbers"][0].get_value().get<int>() == 1);
         TS_ASSERT(my_object["numbers"][1].get_value().get<int>() == 2);
+    }
+
+    void testParseString() {
+        try {
+            std::stringstream input("\"This is a valid string\"");
+            std::string str = parse_string(input);
+            TS_ASSERT(str == "This is a valid string");
+        } catch (lab::parser::exception ex) {
+            TS_ASSERT(false);
+        }
+
+        // Check control characters.
+        try {
+            std::stringstream input("\"\\\" \\\\ \\t \\b \\f \\n \\r\"");
+            std::string str = parse_string(input);
+            TS_ASSERT(str == "\" \\ \t \b \f \n \r");
+        } catch (lab::parser::exception ex) {
+            TS_ASSERT(false);
+        }
+
+        // Check invalid control characters.
+        try {
+            std::stringstream input("\"\\m\"");
+            parse_string(input);
+            TS_ASSERT(false);
+        } catch (lab::parser::exception ex) {
+        }
+
+        // Check not a string
+        try {
+            std::stringstream input("This is not a valid string");
+            parse_string(input);
+            TS_ASSERT(false);
+        } catch (lab::parser::exception ex) {
+        }
+
+        // Check unclosed string
+        try {
+            std::stringstream input("\"This is an \\\"unclosed string");
+            parse_string(input);
+            TS_ASSERT(false);
+        } catch (lab::parser::exception ex) {
+            // Check that we rewind the stream
+            TS_ASSERT(ex.get_line() == 1);
+            TS_ASSERT(ex.get_row() == 1);
+        }
     }
 };
 

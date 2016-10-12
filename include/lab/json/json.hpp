@@ -14,6 +14,7 @@
 
 #include "lab/util/value.hpp"
 #include "lab/util/exception.hpp"
+#include "lab/parser/parser.hpp"
 
 namespace lab { namespace json {
 
@@ -132,6 +133,9 @@ class json {
     json& operator[](int index)
         throw(util::exception);
 };
+
+std::string parse_string(std::istream& input)
+        throw(parser::exception);
 
 }}
 
