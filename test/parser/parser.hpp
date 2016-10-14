@@ -133,13 +133,23 @@ class ParserTestSuite : public CxxTest::TestSuite {
 
     void testParseMany() {
         std::stringstream input("    bob");
-        parse_many<char, char>(input, (function<char, char>)parse_char, ' ');
+        parse_many<std::string, char, char>(
+            input, (function<char, char>)parse_char, ' '
+        );
         try {
             std::string result = parse_word(input, "bob");
             TS_ASSERT(result == "bob");
         } catch (exception ex) {
             TS_ASSERT(false);
         }
+    }
+
+    void testParseManyStr() {
+        std::stringstream input("    bob");
+        std::string result = parse_many<std::string, char, char>(
+            input, (function<char, char>)parse_char, ' '
+        );
+        TS_ASSERT(result == "    ");
     }
 
     void testSkipMany() {

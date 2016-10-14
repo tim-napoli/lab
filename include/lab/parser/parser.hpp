@@ -82,11 +82,11 @@ T parse_or(std::istream& input,
  * If `Args` is specified, they are extra arguments passed to `parser`.
  * @return a list of parsed results.
  */
-template <typename T, typename... Args>
-std::list<T> parse_many(std::istream& input, function<T, Args...> parser,
-                        Args... args)
+template <typename C, typename T, typename... Args>
+C parse_many(std::istream& input, function<T, Args...> parser,
+             Args... args)
 {
-    std::list<T> result_list;
+    C result_list;
     while (1) {
         std::streampos initial_pos = input.tellg();
         try {
