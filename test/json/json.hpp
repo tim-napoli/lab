@@ -179,5 +179,36 @@ class JsonTestSuite : public CxxTest::TestSuite {
         } catch (lab::parser::exception ex) {
         }
     }
+
+    void testParseExp() {
+        std::vector<std::string> prefixes = {
+            "e", "e+", "e-", "E", "E+", "E-"
+        };
+        for (auto it = prefixes.begin(); it != prefixes.end(); it++) {
+            std::stringstream input(*it + "325");
+            try {
+                std::string result = parse_exp(input);
+                TS_ASSERT(result == *it + "325");
+            } catch (lab::parser::exception ex) {
+                TS_ASSERT(false);
+            }
+        }
+
+        try {
+            std::stringstream input("Bob is cool");
+            parse_exp(input);
+            TS_ASSERT(false);
+        } catch (lab::parser::exception ex) {
+        }
+
+        for (auto it = prefixes.begin(); it != prefixes.end(); it++) {
+            try {
+                std::stringstream input(*it);
+                parse_exp(input);
+                TS_ASSERT(false);
+            } catch (lab::parser::exception ex) {
+            }
+        }
+    }
 };
 

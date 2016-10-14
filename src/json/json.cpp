@@ -234,6 +234,36 @@ std::string parse_frac(std::istream& input)
     return result;
 }
 
+std::string parse_exp(std::istream& input)
+        throw(parser::exception)
+{
+    std::string result = parser::parse_or<std::string>(
+        input, (parser::functions<std::string>) {
+            [](std::istream& input) {return parser::parse_word(input, "e-");},
+            [](std::istream& input) {return parser::parse_word(input, "e+");},
+            [](std::istream& input) {return parser::parse_word(input, "E+");},
+            [](std::istream& input) {return parser::parse_word(input, "E-");},
+            [](std::istream& input) {return parser::parse_word(input, "e");},
+            [](std::istream& input) {return parser::parse_word(input, "E");},
+        }
+    );
+
+    /* TODO add a range of times we need and can apply the parsing with
+     *      parse_many.
+     */
+    size_t length = result.length();
+    result += parser::parse_many<std::string, char, std::string>(
+        input,
+        (parser::function<char, std::string>)parser::parse_one_of_chars,
+        "0123456789"
+    );
+    if (result.length() == length) {
+        throw parser::exception(input, "an exponential notation must be "
+                                       "followed by at least one digit.");
+    }
+    return result;
+}
+
 /* ------------------------------------------------------------------------- */
 
 }}
