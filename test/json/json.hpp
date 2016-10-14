@@ -247,5 +247,23 @@ class JsonTestSuite : public CxxTest::TestSuite {
         } catch (lab::parser::exception ex) {
         }
     }
+
+    void testParseValue() {
+        try {
+            std::stringstream input("\"This is some text\"");
+            json result = parse_value(input);
+            TS_ASSERT(result.get_value().get() == "This is some text");
+        } catch(lab::parser::exception ex) {
+            TS_ASSERT(false);
+        }
+
+        try {
+            std::stringstream input("5687.32e10");
+            json result = parse_value(input);
+            TS_ASSERT(result.get_value().get<double>() == 5687.32e10);
+        } catch(lab::parser::exception ex) {
+            TS_ASSERT(false);
+        }
+    }
 };
 

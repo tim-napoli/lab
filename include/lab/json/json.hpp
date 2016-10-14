@@ -149,6 +149,9 @@ std::string parse_exp(std::istream& input)
 std::string parse_numeric(std::istream& input)
         throw(parser::exception);
 
+json parse_value(std::istream& input)
+        throw(parser::exception);
+
 }}
 
 #endif

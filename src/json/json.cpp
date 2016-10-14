@@ -277,6 +277,22 @@ std::string parse_numeric(std::istream& input)
     return result;
 }
 
+json parse_value(std::istream& input)
+        throw(parser::exception)
+{
+    try {
+        std::string value = parser::parse_or<std::string>(
+            input, (parser::functions<std::string>) {
+                (parser::function<std::string>)parse_string,
+                (parser::function<std::string>)parse_numeric
+            }
+        );
+        return json(value);
+    } catch (parser::exception ex) {
+    }
+    throw parser::exception(input, "not a json value");
+}
+
 /* ------------------------------------------------------------------------- */
 
 }}
