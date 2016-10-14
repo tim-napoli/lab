@@ -264,6 +264,19 @@ std::string parse_exp(std::istream& input)
     return result;
 }
 
+std::string parse_numeric(std::istream& input)
+        throw(parser::exception)
+{
+    std::string result = parse_int(input);
+    result += parser::parse_optional<std::string>(
+                input, "", (parser::function<std::string>)parse_frac
+    );
+    result += parser::parse_optional<std::string>(
+                input, "", (parser::function<std::string>)parse_exp
+    );
+    return result;
+}
+
 /* ------------------------------------------------------------------------- */
 
 }}

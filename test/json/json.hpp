@@ -210,5 +210,42 @@ class JsonTestSuite : public CxxTest::TestSuite {
             }
         }
     }
+
+    void testParseNumeric() {
+        try {
+            std::stringstream input("123456");
+            TS_ASSERT(parse_numeric(input) == "123456");
+        } catch (lab::parser::exception ex) {
+            TS_ASSERT(false);
+        }
+
+        try {
+            std::stringstream input("-123456");
+            TS_ASSERT(parse_numeric(input) == "-123456");
+        } catch (lab::parser::exception ex) {
+            TS_ASSERT(false);
+        }
+
+        try {
+            std::stringstream input("-123456.32");
+            TS_ASSERT(parse_numeric(input) == "-123456.32");
+        } catch (lab::parser::exception ex) {
+            TS_ASSERT(false);
+        }
+
+        try {
+            std::stringstream input("-123456.32e-32");
+            TS_ASSERT(parse_numeric(input) == "-123456.32e-32");
+        } catch (lab::parser::exception ex) {
+            TS_ASSERT(false);
+        }
+
+        try {
+            std::stringstream input("bob");
+            parse_numeric(input);
+            TS_ASSERT(false);
+        } catch (lab::parser::exception ex) {
+        }
+    }
 };
 
