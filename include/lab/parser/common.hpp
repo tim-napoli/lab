@@ -39,6 +39,12 @@ char parse_space(std::istream& input)
         throw(exception);
 
 /**
+ * Skip spaces on `input` (@see parse_space).
+ * @return the number of skipped spaces.
+ */
+int skip_spaces(std::istream& input);
+
+/**
  * Parse the word `word` on `input`. `input` is consumed.
  * @return the parsed word.
  * @throw a parser::exception if `input` doesn't start with `word`.

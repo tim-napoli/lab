@@ -33,6 +33,11 @@ char parse_space(std::istream& input)
     return read;
 }
 
+int skip_spaces(std::istream& input)
+{
+    return skip_many<char>(input, (function<char>)parse_space);
+}
+
 std::string parse_word(std::istream& input, const std::string& word)
         throw(exception)
 {
