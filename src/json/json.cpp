@@ -280,17 +280,50 @@ std::string parse_numeric(std::istream& input)
 json parse_value(std::istream& input)
         throw(parser::exception)
 {
+    return parser::parse_or<json>(
+        input, (parser::functions<json>) {
+            [](std::istream& input) {return json(parse_numeric(input));},
+            [](std::istream& input) {return json(parse_string(input));},
+            parse_array,
+        }
+    );
+}
+
+json parse_array(std::istream& input)
+        throw(parser::exception)
+{
+    parser::parse_char(input, '[');
+    parser::skip_spaces(input);
+
+    std::vector<json> values = parser::parse_many<std::vector<json>, json>(
+        input,
+        parser::function<json>([](std::istream& input) {
+            parser::skip_spaces(input);
+            return parser::parse_or<json>(input, (parser::functions<json>) {
+                parse_value,
+                [](std::istream& input) {
+                    parser::parse_char(input, ',');
+                    parser::skip_spaces(input);
+                    return parse_value(input);
+                }
+            });
+        })
+    );
+    json array(values);
+
+    // Could have a trailing comma.
+    parser::skip_spaces(input);
+    parser::parse_optional<char, char>(
+        input, ' ', (parser::function<char, char>)parser::parse_char, ','
+    );
+    parser::skip_spaces(input);
+
     try {
-        std::string value = parser::parse_or<std::string>(
-            input, (parser::functions<std::string>) {
-                (parser::function<std::string>)parse_string,
-                (parser::function<std::string>)parse_numeric
-            }
-        );
-        return json(value);
+        parser::parse_char(input, ']');
     } catch (parser::exception ex) {
+        throw parser::exception(input, "unclosed array");
     }
-    throw parser::exception(input, "not a json value");
+    return array;
 }
 
 /* ------------------------------------------------------------------------- */

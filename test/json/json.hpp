@@ -265,5 +265,43 @@ class JsonTestSuite : public CxxTest::TestSuite {
             TS_ASSERT(false);
         }
     }
+
+    void testParseArray() {
+        try {
+            std::stringstream input("[ ]");
+            json array = parse_array(input);
+        } catch (lab::parser::exception ex) {
+            TS_ASSERT(false);
+        }
+
+        try {
+            std::stringstream input("[ 32 , \"bob\",52.12e10   ,]");
+            json array = parse_array(input);
+            TS_ASSERT(array[0].get_value().get<double>() == 32);
+            TS_ASSERT(array[1].get_value().get() == "bob");
+            TS_ASSERT(array[2].get_value().get<double>() == 52.12e10);
+        } catch (lab::parser::exception ex) {
+            TS_ASSERT(false);
+        }
+
+        try {
+            std::stringstream input("[ 32 , \"bob\",[52.12e10, 42 ]   ,]");
+            json array = parse_array(input);
+            TS_ASSERT(array[0].get_value().get<double>() == 32);
+            TS_ASSERT(array[1].get_value().get() == "bob");
+            TS_ASSERT(array[2].is_array());
+            TS_ASSERT(array[2][0].get_value().get<double>() == 52.12e10);
+            TS_ASSERT(array[2][1].get_value().get<int>() == 42);
+        } catch (lab::parser::exception ex) {
+            TS_ASSERT(false);
+        }
+
+        try {
+            std::stringstream input("[1, 2, 3");
+            parse_array(input);
+            TS_ASSERT(false);
+        } catch (lab::parser::exception ex) {
+        }
+    }
 };
 
