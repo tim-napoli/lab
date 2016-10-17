@@ -1,4 +1,5 @@
 #include <cassert>
+#include <fstream>
 #include "lab/json/json.hpp"
 #include "lab/parser/common.hpp"
 
@@ -378,6 +379,25 @@ json parse_object(std::istream& input)
         throw parser::exception(input, "unclosed object");
     }
     return object;
+}
+
+json json::parse(std::istream& input)
+        throw(parser::exception)
+{
+    return parse_object(input);
+}
+
+json json::parse(std::string& path)
+        throw(parser::exception, util::exception)
+{
+    std::ifstream input;
+    input.open(path);
+    if (!input.is_open()) {
+        throw util::exception::build_formatted(
+            "cannot open json file ", path
+        );
+    }
+    return json::parse(input);
 }
 
 /* ------------------------------------------------------------------------- */

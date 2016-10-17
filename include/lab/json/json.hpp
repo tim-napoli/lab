@@ -132,6 +132,23 @@ class json {
         throw(util::exception);
     json& operator[](int index)
         throw(util::exception);
+
+    /**
+     * Parse a json object from the `input` stream.
+     * @return the parsed json object.
+     * @throw a parser::exception if the stream cannot be parsed.
+     */
+    static json parse(std::istream& input)
+        throw(parser::exception);
+
+    /**
+     * Parse a json object from the file located at `path`.
+     * @return the parsed json object.
+     * @throw a util::exception if the file cannot be opened.
+     * @throw a parser::exception if the file cannot be parsed.
+     */
+    static json parse(std::string& path)
+        throw(parser::exception, util::exception);
 };
 
 std::string parse_string(std::istream& input)
