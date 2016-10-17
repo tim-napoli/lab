@@ -335,5 +335,35 @@ class JsonTestSuite : public CxxTest::TestSuite {
         } catch (lab::parser::exception ex) {
         }
     }
+
+    void testParseObject() {
+        try {
+            std::stringstream input(
+                "{\n"
+                "   \"name\"    : \"John\",\n"
+                "   \"age\"     : 42,\n"
+                "   \"primes\"  : [2, 3, 5, 7, 11, 13],\n"
+                "   \"position\": {\n"
+                "       \"x\": 32.123456,\n"
+                "       \"y\": 42.123456,\n"
+                "   },\n"
+                "}\n"
+            );
+            json object = parse_object(input);
+            TS_ASSERT(object["name"].get_value().get() == "John");
+            TS_ASSERT(object["age"].get_value().get<int>() == 42);
+            TS_ASSERT(object["primes"][0].get_value().get<int>() == 2);
+            TS_ASSERT(object["primes"][1].get_value().get<int>() == 3);
+            TS_ASSERT(object["primes"][2].get_value().get<int>() == 5);
+            TS_ASSERT(object["primes"][3].get_value().get<int>() == 7);
+            TS_ASSERT(object["primes"][4].get_value().get<int>() == 11);
+            TS_ASSERT(object["primes"][5].get_value().get<int>() == 13);
+            TS_ASSERT(object["position"]["x"].get_value().get<double>() ==
+                      32.123456);
+            TS_ASSERT(object["position"]["y"].get_value().get<double>() ==
+                      42.123456);
+        } catch (lab::parser::exception ex) {
+        }
+    }
 };
 

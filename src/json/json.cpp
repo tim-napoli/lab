@@ -285,6 +285,7 @@ json parse_value(std::istream& input)
             [](std::istream& input) {return json(parse_numeric(input));},
             [](std::istream& input) {return json(parse_string(input));},
             parse_array,
+            parse_object,
         }
     );
 }
@@ -335,6 +336,48 @@ std::pair<std::string, json> parse_pair(std::istream& input)
     parser::skip_spaces(input);
     json value = parse_value(input);
     return std::pair<std::string, json>(name, value);
+}
+
+json parse_object(std::istream& input)
+        throw(parser::exception)
+{
+    parser::parse_char(input, '{');
+    parser::skip_spaces(input);
+
+    typedef std::pair<std::string, json> pair;
+
+    std::vector<pair> pairs = parser::parse_many<std::vector<pair>, pair>(
+        input,
+        parser::function<pair>([](std::istream& input) {
+            parser::skip_spaces(input);
+            return parser::parse_or<pair>(input, (parser::functions<pair>) {
+                parse_pair,
+                [](std::istream& input) {
+                    parser::parse_char(input, ',');
+                    parser::skip_spaces(input);
+                    return parse_pair(input);
+                }
+            });
+        })
+    );
+    json object(std::map<std::string, json> { });
+    for (auto it = pairs.begin(); it != pairs.end(); it++) {
+        object.set_member(it->first, it->second);
+    }
+
+    // Could have a trailing comma.
+    parser::skip_spaces(input);
+    parser::parse_optional<char, char>(
+        input, ' ', (parser::function<char, char>)parser::parse_char, ','
+    );
+    parser::skip_spaces(input);
+
+    try {
+        parser::parse_char(input, '}');
+    } catch (parser::exception ex) {
+        throw parser::exception(input, "unclosed object");
+    }
+    return object;
 }
 
 /* ------------------------------------------------------------------------- */

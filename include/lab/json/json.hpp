@@ -158,6 +158,9 @@ json parse_array(std::istream& input)
 std::pair<std::string, json> parse_pair(std::istream& input)
         throw(parser::exception);
 
+json parse_object(std::istream& input)
+        throw(parser::exception);
+
 }}
 
 #endif
