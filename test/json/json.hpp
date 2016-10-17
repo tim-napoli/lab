@@ -303,5 +303,37 @@ class JsonTestSuite : public CxxTest::TestSuite {
         } catch (lab::parser::exception ex) {
         }
     }
+
+    void testParsePair() {
+        try {
+            std::stringstream input("\"name\" : 32");
+            std::pair<std::string, json> result = parse_pair(input);
+            TS_ASSERT(result.first == "name");
+            TS_ASSERT(result.second.get_value().get<int>() == 32);
+        } catch (lab::parser::exception ex) {
+            TS_ASSERT(false);
+        }
+
+        try {
+            std::stringstream input("\"name\" : xyz");
+            parse_pair(input);
+            TS_ASSERT(false);
+        } catch (lab::parser::exception ex) {
+        }
+
+        try {
+            std::stringstream input("\"name\"  32");
+            parse_pair(input);
+            TS_ASSERT(false);
+        } catch (lab::parser::exception ex) {
+        }
+
+        try {
+            std::stringstream input("name : 32");
+            parse_pair(input);
+            TS_ASSERT(false);
+        } catch (lab::parser::exception ex) {
+        }
+    }
 };
 

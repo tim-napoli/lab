@@ -326,6 +326,17 @@ json parse_array(std::istream& input)
     return array;
 }
 
+std::pair<std::string, json> parse_pair(std::istream& input)
+        throw(parser::exception)
+{
+    std::string name = parse_string(input);
+    parser::skip_spaces(input);
+    parser::parse_char(input, ':');
+    parser::skip_spaces(input);
+    json value = parse_value(input);
+    return std::pair<std::string, json>(name, value);
+}
+
 /* ------------------------------------------------------------------------- */
 
 }}
