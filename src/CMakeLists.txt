@@ -1,3 +1,4 @@
+add_subdirectory(engine)
 add_subdirectory(event)
 add_subdirectory(json)
 add_subdirectory(parser)
