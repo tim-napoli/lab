@@ -27,8 +27,11 @@ namespace lab { namespace event {
  */
 class event {
   private:
+    size_t                             _source_id;
     int                                _type;
     std::map<std::string, util::value> _values;
+
+    void set_source_id(size_t id) {_source_id = id;}
 
   public:
     event(int type = -1);
@@ -37,12 +40,16 @@ class event {
 
     int get_type() const {return _type;}
 
+    size_t get_source_id() const {return _source_id;}
+
     void set_type(int type) {_type = type;}
 
     void set_value(const std::string& name, const util::value& value);
 
     const util::value& get_value(const std::string& name) const
         throw(util::exception);
+
+    friend class source;
 };
 
 }}

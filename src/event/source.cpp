@@ -22,7 +22,8 @@ void source::unregister_listener(listener* l) {
     _listeners.remove(l);
 }
 
-void source::send_event(const event& event) throw(util::exception) {
+void source::send_event(event& event) throw(util::exception) {
+    event.set_source_id(typeid(*this).hash_code());
     for (auto it = _listeners.begin(); it != _listeners.end(); it++) {
         (*it)->notify(event);
     }
