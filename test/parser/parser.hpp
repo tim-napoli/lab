@@ -114,7 +114,7 @@ class ParserTestSuite : public CxxTest::TestSuite {
 
         // Now we ensure we don't consume input in failing case.
         try {
-            char result = parse_or<char>(input, functions<char> {
+            parse_or<char>(input, functions<char> {
                 [](std::istream& input) {
                     return parse_char(input, 'x');
                 },

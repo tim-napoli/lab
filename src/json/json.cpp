@@ -14,16 +14,16 @@ json::json(const util::value& value)
 
 json::json(const std::map<std::string, json>& object)
         : _tag(json::object)
-        , _object(object)
         , _value()
+        , _object(object)
         , _array()
 { }
 
 json::json(const std::vector<json>& array)
         : _tag(json::array)
-        , _array(array)
         , _value()
         , _object()
+        , _array(array)
 { }
 
 json::~json() { }
