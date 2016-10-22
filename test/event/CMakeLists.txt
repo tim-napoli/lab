@@ -18,3 +18,10 @@ CXXTEST_ADD_TEST(
     ${CMAKE_CURRENT_SOURCE_DIR}/source-id.hpp
 )
 target_link_libraries(source-id lab-event)
+
+CXXTEST_ADD_TEST(
+    handler
+    handler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/handler.hpp
+)
+target_link_libraries(handler lab-event)
