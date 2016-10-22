@@ -62,7 +62,7 @@ class source {
      * virtual. Don't try to overload it else you know what you're doing).
      * @throw Throws exceptions thrown by listeners at event reception.
      */
-    virtual void send_event(event& event) throw(util::exception);
+    virtual void send_event(event event) throw(util::exception);
 
     SOURCE_MAKE_ID(source)
 };
