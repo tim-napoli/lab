@@ -26,23 +26,27 @@ namespace lab { namespace event {
  * events to make multiple components to talk, because it is slow.
  */
 class event {
+  public:
+    typedef size_t type;
+    static const type no_type = (type)-1;
+
   private:
     size_t                             _source_id;
-    int                                _type;
+    type                               _type;
     std::map<std::string, util::value> _values;
 
     void set_source_id(size_t id) {_source_id = id;}
 
   public:
-    event(int type = -1);
+    event(type type = no_type);
 
     ~event();
 
-    int get_type() const {return _type;}
+    type get_type() const {return _type;}
 
     size_t get_source_id() const {return _source_id;}
 
-    void set_type(int type) {_type = type;}
+    void set_type(type type) {_type = type;}
 
     void set_value(const std::string& name, const util::value& value);
 

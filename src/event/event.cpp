@@ -2,7 +2,7 @@
 
 namespace lab { namespace event {
 
-event::event(int type)
+event::event(type type)
         : _type(type)
         , _values()
 {
