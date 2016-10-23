@@ -1,0 +1,11 @@
+CXXTEST_ADD_TEST(
+    engine
+    engine.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/engine.hpp
+)
+target_link_libraries(engine
+                      lab-engine
+                      lab-json
+                      lab-parser
+                      lab-event
+                      mock-glfw)
