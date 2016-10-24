@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <GLFW/glfw3.h>
 #include "lab/engine/engine.hpp"
+#include "lab/engine/window.hpp"
 
 namespace lab { namespace engine {
 
@@ -109,6 +110,11 @@ void engine::close() {
 }
 
 void engine::notify(const event::event& evt) throw(util::exception) {
+    if (evt.get_source_id() == window::get_id()) {
+        if (evt.get_type() == window::events::closed) {
+            close();
+        }
+    }
 }
 
 }}

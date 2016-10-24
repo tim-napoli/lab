@@ -9,3 +9,16 @@ target_link_libraries(engine
                       lab-parser
                       lab-event
                       mock-glfw)
+
+CXXTEST_ADD_TEST(
+    window
+    window.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/window.hpp
+)
+target_link_libraries(window
+                      lab-engine
+                      lab-json
+                      lab-parser
+                      lab-event
+                      mock-glfw
+                      pthread)
