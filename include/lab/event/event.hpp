@@ -40,6 +40,8 @@ class event {
   public:
     event(type type = no_type);
 
+    event(type type, const std::map<std::string, util::value>& values);
+
     ~event();
 
     type get_type() const {return _type;}

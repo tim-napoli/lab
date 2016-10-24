@@ -9,6 +9,13 @@ event::event(type type)
 
 }
 
+event::event(type type, const std::map<std::string, util::value>& values)
+        : _type(type)
+        , _values(values)
+{
+
+}
+
 event::~event() {
 
 }
