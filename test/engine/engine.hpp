@@ -9,12 +9,15 @@ class ticker : public engine::module {
     int _ticks;
     bool _started;
     bool _stopped;
+    engine::engine* _engine;
 
   public:
-    ticker() : engine::module("ticker", json::json(util::value("")))
+    ticker(engine::engine* engine)
+             : engine::module("ticker", json::json(util::value("")))
              , _ticks(0)
              , _started(false)
              , _stopped(false)
+             , _engine(engine)
     {
 
     }
@@ -34,7 +37,7 @@ class ticker : public engine::module {
     void update() throw(util::exception) {
         _ticks++;
         if (_ticks == 10) {
-            send_event(event::event(engine::engine::events::stop_engine));
+            _engine->close();
         }
     }
 
@@ -57,7 +60,7 @@ class EngineTestSuite : public CxxTest::TestSuite {
 
     void testEngine() {
         engine::engine engine(60);
-        std::unique_ptr<ticker> ticker_ptr(new ticker());
+        std::unique_ptr<ticker> ticker_ptr(new ticker(&engine));
         const ticker* saved_ticker = ticker_ptr.get();
         engine.plug_module(std::move(ticker_ptr));
 

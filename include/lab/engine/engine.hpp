@@ -42,10 +42,6 @@ class engine : public event::listener
 
   public:
     enum events : event::event::type {
-        /**
-         * Orders the engine to stop.
-         */
-        stop_engine,
     };
 
     /**
@@ -77,6 +73,11 @@ class engine : public event::listener
      * Stop the engine.
      */
     void stop() throw(util::exception);
+
+    /**
+     * Force the engine to stop.
+     */
+    void close();
 
     void notify(const event::event& evt) throw(util::exception);
 };

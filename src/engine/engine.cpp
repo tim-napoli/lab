@@ -104,10 +104,11 @@ void engine::stop() throw(util::exception) {
     glfwTerminate();
 }
 
+void engine::close() {
+    _exit = true;
+}
+
 void engine::notify(const event::event& evt) throw(util::exception) {
-    if (evt.get_type() == events::stop_engine) {
-        _exit = true;
-    }
 }
 
 }}
