@@ -1,4 +1,5 @@
 #include "lab/engine/window.hpp"
+#include "lab/engine/window_user_data.hpp"
 
 namespace lab { namespace engine {
 
@@ -32,7 +33,9 @@ bool window::monitor_is_compatible_size(GLFWmonitor* monitor,
 
 static void _on_framebuffer_resize(GLFWwindow* glfw_win, int width, int height)
 {
-    window* win = (window*)glfwGetWindowUserPointer(glfw_win);
+    window_user_data* win_data =
+        (window_user_data*)glfwGetWindowUserPointer(glfw_win);
+    window* win = win_data->win;
     win->send_event(event::event(
         window::events::resized, {
             {"width", util::value::build<int>(width)},
@@ -68,7 +71,10 @@ void window::start() throw(util::exception) {
     }
     glfwMakeContextCurrent(_window);
 
-    glfwSetWindowUserPointer(_window, this);
+    window_user_data* window_data = new window_user_data;
+    window_data->win = this;
+
+    glfwSetWindowUserPointer(_window, window_data);
     glfwSetFramebufferSizeCallback(_window, &_on_framebuffer_resize);
 }
 
@@ -81,6 +87,9 @@ void window::update() throw(util::exception) {
 
 void window::stop() throw(util::exception) {
     if (_window) {
+        window_user_data* win_data =
+            (window_user_data*)glfwGetWindowUserPointer(_window);
+        delete win_data;
         glfwDestroyWindow(_window);
     }
 }
