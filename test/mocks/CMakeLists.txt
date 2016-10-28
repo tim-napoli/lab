@@ -8,5 +8,5 @@ CXXTEST_ADD_TEST(
     glfw-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/glfw-test.hpp
 )
-target_link_libraries(mock-glfw-test mock-glfw)
+target_link_libraries(mock-glfw-test mock-glfw pthread)
 

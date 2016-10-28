@@ -84,7 +84,14 @@ void engine::start() throw(util::exception) {
     }
     glfwSetErrorCallback(&error_callback);
 
-    start_modules();
+    try {
+        start_modules();
+    } catch (util::exception ex) {
+        // We terminate GLFW in case the process will try to restart an
+        // engine (like tests).
+        glfwTerminate();
+        throw ex;
+    }
 }
 
 void engine::stop_modules() throw(util::exception) {

@@ -8,7 +8,8 @@ target_link_libraries(engine
                       lab-json
                       lab-parser
                       lab-event
-                      mock-glfw)
+                      mock-glfw
+                      pthread)
 
 CXXTEST_ADD_TEST(
     window

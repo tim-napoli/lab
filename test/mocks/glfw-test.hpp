@@ -3,9 +3,17 @@
 #include "mocks/glfw.hpp"
 
 // Used to test glfw window resize function
-static bool window_resized;
+static bool window_resized = false;
 static void on_window_resize(GLFWwindow* window, int width, int height) {
     window_resized = true;
+}
+
+// Used to test glfw keyboard function
+static int keyboard_nevents = 0;
+static void on_keyboard_key(GLFWwindow* window, int key, int scancode,
+                            int action, int mods)
+{
+    keyboard_nevents++;
 }
 
 class GlfwTestSuite : public CxxTest::TestSuite {
@@ -69,6 +77,27 @@ class GlfwTestSuite : public CxxTest::TestSuite {
 
         glfwSetWindowShouldClose(window, 1);
         TS_ASSERT(glfwWindowShouldClose(window) == 1);
+
+        glfwDestroyWindow(window);
+    }
+
+    void testKeyboard() {
+        GLFWwindow* window = glfwCreateWindow(400, 300, "keyboard", NULL,
+                                              NULL);
+        glfwMakeContextCurrent(window);
+        glfwSetKeyCallback(window, &on_keyboard_key);
+
+        glfw_mock_fake_key_action(GLFW_KEY_ENTER, 0, GLFW_PRESS,
+                                  GLFW_MOD_SHIFT);
+        glfw_mock_fake_key_action(GLFW_KEY_ENTER, 0, GLFW_RELEASE,
+                                  GLFW_MOD_SHIFT);
+        glfw_mock_fake_key_action(GLFW_KEY_SPACE, 0, GLFW_PRESS,
+                                  GLFW_MOD_ALT);
+        glfwPollEvents();
+        // Both call to ensure that one call make the events queue empty.
+        glfwPollEvents();
+
+        TS_ASSERT(keyboard_nevents == 3);
 
         glfwDestroyWindow(window);
     }

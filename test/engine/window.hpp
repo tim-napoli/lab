@@ -62,11 +62,9 @@ class window_monitor : public engine::module {
 class WindowTestSuite : public CxxTest::TestSuite {
   public:
     void setUp() {
-
     }
 
     void tearDown() {
-
     }
 
     void testWindow() {
@@ -83,7 +81,7 @@ class WindowTestSuite : public CxxTest::TestSuite {
         window_ptr->register_listener(monitor_ptr.get());
 
         std::thread thread([](engine::window* win) {
-            usleep(1000),
+            usleep(5000),
             win->resize(1600, 1000);
             win->close();
         }, window_ptr.get());
