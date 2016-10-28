@@ -9,11 +9,13 @@
 #define _lab_engine_window_user_data_hpp_
 
 #include "lab/engine/window.hpp"
+#include "lab/engine/keyboard.hpp"
 
 namespace lab { namespace engine {
 
 struct window_user_data {
     window* win;
+    keyboard* keyb;
 };
 
 }}

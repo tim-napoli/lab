@@ -83,6 +83,7 @@ void window::update() throw(util::exception) {
         send_event(event::event(events::closed));
     }
     glfwSwapBuffers(_window);
+    glfwPollEvents();
 }
 
 void window::stop() throw(util::exception) {

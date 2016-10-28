@@ -23,3 +23,16 @@ target_link_libraries(window
                       lab-event
                       mock-glfw
                       pthread)
+
+CXXTEST_ADD_TEST(
+    keyboard
+    keyboard.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/keyboard.hpp
+)
+target_link_libraries(keyboard
+                      lab-engine
+                      lab-json
+                      lab-parser
+                      lab-event
+                      mock-glfw
+                      pthread)

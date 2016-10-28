@@ -3,4 +3,5 @@ add_library(
     module.cpp
     engine.cpp
     window.cpp
+    keyboard.cpp
 )
