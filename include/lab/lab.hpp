@@ -10,6 +10,18 @@
 
 #include "lab/util/util.hpp"
 
+#include "lab/engine/engine.hpp"
+#include "lab/engine/module.hpp"
+#include "lab/engine/module-manager.hpp"
+#include "lab/engine/window.hpp"
+#include "lab/engine/keyboard.hpp"
+
+#include "lab/event/event.hpp"
+#include "lab/event/source.hpp"
+#include "lab/event/listener.hpp"
+
+#include "lab/json/json.hpp"
+
 namespace lab {
 
 }
