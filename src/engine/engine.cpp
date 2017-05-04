@@ -11,7 +11,7 @@ engine::engine(int ticks_per_second)
         , event::source()
         , _exit(false)
         , _refresh_rate(1.0 / ticks_per_second)
-        , _modules()
+        , _module_manager()
 {
 
 }
@@ -20,47 +20,12 @@ engine::~engine() {
 
 }
 
-void engine::plug_module(std::unique_ptr<module> module) {
-    // XXX This is not really RAII but it's safe since an event source
-    //     don't own the registred listener.
-    //     However, we should think about making modules shared_ptr
-    //     instead of unique_ptr...
-    register_listener(module.get());
-    module->register_listener(this);
-    _modules.push_back(std::move(module));
-}
-
-void engine::start_modules() throw(util::exception) {
-    for (auto it = _modules.begin(); it != _modules.end(); it++) {
-        try {
-            (*it)->start();
-        } catch (util::exception ex) {
-            throw util::exception::build_formatted(
-                "Engine cannot start module '", (*it)->get_name(), "': ",
-                ex.get_message()
-            );
-        }
-    }
-}
-
-void engine::update_modules() throw(util::exception) {
-    for (auto it = _modules.begin(); it != _modules.end(); it++) {
-        try {
-            (*it)->update();
-        } catch (util::exception ex) {
-            throw util::exception::build_formatted(
-                "Engine cannot update module '", (*it)->get_name(), "': ",
-                ex.get_message()
-            );
-        }
-    }
-}
 
 void engine::run() throw(util::exception) {
     while (!_exit) {
         double current_time = glfwGetTime();
 
-        update_modules();
+        _module_manager.update();
 
         // Sleeping
         double running_time = glfwGetTime() - current_time;
@@ -85,7 +50,8 @@ void engine::start() throw(util::exception) {
     glfwSetErrorCallback(&error_callback);
 
     try {
-        start_modules();
+        _module_manager.register_listener(this);
+        _module_manager.start();
     } catch (util::exception ex) {
         // We terminate GLFW in case the process will try to restart an
         // engine (like tests).
@@ -94,21 +60,8 @@ void engine::start() throw(util::exception) {
     }
 }
 
-void engine::stop_modules() throw(util::exception) {
-    for (auto it = _modules.begin(); it != _modules.end(); it++) {
-        try {
-            (*it)->stop();
-        } catch (util::exception ex) {
-            throw util::exception::build_formatted(
-                "Engine cannot stop module '", (*it)->get_name(), "': ",
-                ex.get_message()
-            );
-        }
-    }
-}
-
 void engine::stop() throw(util::exception) {
-    stop_modules();
+    _module_manager.stop();
     glfwTerminate();
 }
 
@@ -116,8 +69,12 @@ void engine::close() {
     _exit = true;
 }
 
+void engine::plug_module(std::unique_ptr<module> module) {
+    _module_manager.plug_module(std::move(module));
+}
+
 void engine::notify(const event::event& evt) throw(util::exception) {
-    if (evt.get_source_id() == window::get_id()) {
+    if (evt.get_source_id() == module_manager::get_id()) {
         if (evt.get_type() == window::events::closed) {
             close();
         }

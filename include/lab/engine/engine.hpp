@@ -12,6 +12,7 @@
 #include "lab/event/listener.hpp"
 #include "lab/event/source.hpp"
 #include "lab/engine/module.hpp"
+#include "lab/engine/module-manager.hpp"
 
 namespace lab { namespace engine {
 
@@ -29,34 +30,17 @@ class engine : public event::listener
              , public event::source
 {
   private:
-    bool   _exit;
-    double _refresh_rate;    /// In seconds.
-    std::vector<std::unique_ptr<module>> _modules;
-
-    void start_modules() throw(util::exception);
-
-    void update_modules() throw(util::exception);
-
-    void stop_modules() throw(util::exception);
-
+    bool            _exit;
+    double          _refresh_rate;    /// In seconds.
+    module_manager  _module_manager;
 
   public:
-    enum events : event::event::type {
-    };
-
     /**
      * @param ticks_pers_second Times the engine ticks every seconds.
      */
     engine(int ticks_per_second);
 
     ~engine();
-
-    /**
-     * Plug a module to the engine. The module is set as a listener of the
-     * engine and the engine is set as a listener of the module.
-     * @see lab::engine::module
-     */
-    void plug_module(std::unique_ptr<module> module);
 
     /**
      * Start the engine, every of its modules and the top activity.
@@ -78,6 +62,11 @@ class engine : public event::listener
      * Force the engine to stop.
      */
     void close();
+
+    /**
+     * Add a module to the engine.
+     */
+    void plug_module(std::unique_ptr<module> module);
 
     void notify(const event::event& evt) throw(util::exception);
 };
