@@ -45,6 +45,15 @@ class value {
     }
 
     /**
+     * @return The value to the given type. No conversion is done.
+     */
+    template <typename T>
+    const T get_raw() const {
+        T* data = (T*)_value.data();
+        return *data;
+    }
+
+    /**
      * Set the value from any type.
      */
     template <typename T>
@@ -59,12 +68,31 @@ class value {
     }
 
     /**
+     * Set the value with a raw string of bytes.
+     */
+    template <typename T>
+    void set_raw(const T& value) {
+        T v = value;
+        _value.assign((char*)&v, sizeof(T));
+    }
+
+    /**
      * Build a value from any type.
      */
     template <typename T>
     static util::value build(const T& value) {
         util::value v;
         v.set<T>(value);
+        return v;
+    }
+
+    /**
+     * Build a raw value.
+     */
+    template <typename T>
+    static util::value build_raw(const T& value) {
+        util::value v;
+        v.set_raw<T>(value);
         return v;
     }
 };
