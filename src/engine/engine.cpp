@@ -50,7 +50,6 @@ void engine::start() throw(util::exception) {
     glfwSetErrorCallback(&error_callback);
 
     try {
-        _module_manager.register_listener(this);
         _module_manager.start();
     } catch (util::exception ex) {
         // We terminate GLFW in case the process will try to restart an
@@ -74,7 +73,7 @@ void engine::plug_module(std::unique_ptr<module> module) {
 }
 
 void engine::notify(const event::event& evt) throw(util::exception) {
-    if (evt.get_source_id() == module_manager::get_id()) {
+    if (evt.get_source_id() == window::get_id()) {
         if (evt.get_type() == window::events::closed) {
             close();
         }

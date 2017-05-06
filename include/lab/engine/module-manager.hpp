@@ -9,8 +9,6 @@
 #define _lab_engine_module_manager_hpp_
 
 #include <memory>
-#include "lab/event/listener.hpp"
-#include "lab/event/source.hpp"
 #include "lab/engine/module.hpp"
 
 namespace lab { namespace engine {
@@ -19,8 +17,7 @@ namespace lab { namespace engine {
  * The module manager has the responsibility to start, stop and update modules.
  * It also handle modules communications.
  */
-class module_manager : public event::listener
-                     , public event::source
+class module_manager
 {
   private:
     std::vector<std::unique_ptr<module>> _modules;
@@ -42,10 +39,6 @@ class module_manager : public event::listener
     void update() throw(util::exception);
 
     void stop() throw(util::exception);
-
-    void notify(const event::event& evt) throw(util::exception);
-
-    SOURCE_MAKE_ID(module_manager);
 };
 
 }}

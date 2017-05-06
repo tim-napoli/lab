@@ -89,6 +89,8 @@ class KeyboardTestSuite : public CxxTest::TestSuite {
 
         keyboard_monitor* monitor = new keyboard_monitor();
         std::unique_ptr<keyboard_monitor> monitor_ptr(monitor);
+
+        window_ptr->register_listener(&engine);
         keyboard_ptr->register_listener(monitor_ptr.get());
 
         std::thread thread([](engine::window* win) {

@@ -78,10 +78,12 @@ class WindowTestSuite : public CxxTest::TestSuite {
         );
         window_monitor* monitor = new window_monitor();
         std::unique_ptr<window_monitor> monitor_ptr(monitor);
+
+        window_ptr->register_listener(&engine);
         window_ptr->register_listener(monitor_ptr.get());
 
         std::thread thread([](engine::window* win) {
-            usleep(5000),
+            usleep(5000);
             win->resize(1600, 1000);
             win->close();
         }, window_ptr.get());

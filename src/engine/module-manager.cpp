@@ -15,8 +15,6 @@ void module_manager::plug_module(std::unique_ptr<module> module) {
     //     doesn't own the registred listener.
     //     However, we should think about making modules shared_ptr
     //     instead of unique_ptr...
-    register_listener(module.get());
-    module->register_listener(this);
     _modules.push_back(std::move(module));
 }
 
@@ -57,12 +55,6 @@ void module_manager::stop() throw(util::exception) {
             );
         }
     }
-}
-
-void module_manager::notify(const event::event& evt)
-    throw(util::exception)
-{
-    send_event(evt);
 }
 
 }}
