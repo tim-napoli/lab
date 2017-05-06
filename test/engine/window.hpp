@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <thread>
 #include <cxxtest/TestSuite.h>
+#include "mocks/gl.hpp"
 #include "mocks/glfw.hpp"
 #include "lab/engine/engine.hpp"
 #include "lab/engine/window.hpp"

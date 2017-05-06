@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <unistd.h>
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "lab/engine/engine.hpp"
 #include "lab/engine/window.hpp"
@@ -48,6 +49,10 @@ void engine::start() throw(util::exception) {
         throw util::exception("Cannot start GLFW");
     }
     glfwSetErrorCallback(&error_callback);
+
+    if (!glewInit()) {
+        throw util::exception("Cannot start GLEW");
+    }
 
     try {
         _module_manager.start();

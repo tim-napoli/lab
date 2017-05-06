@@ -1,8 +1,9 @@
 #ifndef _test_mocks_gl_hpp_
 #define _test_mocks_gl_hpp_
 
-/* Forbid inclusion of OpenGL */
+/* Forbid inclusion of OpenGL and GLEW */
 #define __gl_h_
+#define __glew_h__
 
 extern "C" {
 
@@ -15,6 +16,8 @@ typedef struct gl_mock_viewport {
 } gl_mock_viewport_t;
 
 extern gl_mock_viewport_t gl_mock_viewport;
+
+int glewInit();
 
 }
 

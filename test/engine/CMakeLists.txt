@@ -8,6 +8,7 @@ target_link_libraries(engine
                       lab-json
                       lab-parser
                       lab-event
+                      mock-gl
                       mock-glfw
                       pthread)
 
@@ -21,6 +22,7 @@ target_link_libraries(window
                       lab-json
                       lab-parser
                       lab-event
+                      mock-gl
                       mock-glfw
                       pthread)
 
@@ -34,5 +36,6 @@ target_link_libraries(keyboard
                       lab-json
                       lab-parser
                       lab-event
+                      mock-gl
                       mock-glfw
                       pthread)

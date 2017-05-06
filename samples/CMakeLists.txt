@@ -8,4 +8,5 @@ target_link_libraries(
     lab-gfx
     ${GLFW_LIBRARIES}
     ${OPENGL_gl_LIBRARY}
+    ${GLEW_LIBRARIES}
 )
