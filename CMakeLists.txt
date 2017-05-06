@@ -14,6 +14,7 @@ if(CXXTEST_FOUND)
 endif()
 
 find_package(PkgConfig REQUIRED)
+find_package(OpenGL REQUIRED)
 pkg_search_module(GLFW REQUIRED glfw3)
 pkg_search_module(GLM REQUIRED glm)
 

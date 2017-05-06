@@ -22,6 +22,8 @@
 
 #include "lab/json/json.hpp"
 
+#include "lab/gfx/renderer.hpp"
+
 namespace lab {
 
 }

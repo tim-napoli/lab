@@ -5,5 +5,7 @@ target_link_libraries(
     lab-json
     lab-parser
     lab-event
+    lab-gfx
     ${GLFW_LIBRARIES}
+    ${OPENGL_gl_LIBRARY}
 )
