@@ -76,6 +76,8 @@ void window::start() throw(util::exception) {
 
     glfwSetWindowUserPointer(_window, window_data);
     glfwSetFramebufferSizeCallback(_window, &_on_framebuffer_resize);
+
+    resize(width, height);
 }
 
 void window::update() throw(util::exception) {
