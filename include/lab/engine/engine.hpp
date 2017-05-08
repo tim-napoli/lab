@@ -14,18 +14,19 @@
 #include "lab/engine/module.hpp"
 #include "lab/engine/window.hpp"
 #include "lab/engine/keyboard.hpp"
+#include "lab/engine/screen.hpp"
 
 namespace lab { namespace engine {
 
 /**
  * The Lab Engine (or the Great Ordonancer Of The Entire Universe And Beyond)
  * is the main class the lab library provide. It allows to do the link between
- * the system (using modules) and the game (using activities).
+ * the system (window, keyboard, mouse...) and the game (using screens).
  * It will run at a fixed refresh rate (we say "The engine ticks every x
  * milliseconds") calling the update method of every module and of the running
  * activity.
- * The engine communicates with activities and modules using the lab event
- * system. It listens to every modules and the currently running activity.
+ * The engine communicates with screen and devices using the lab event
+ * system.
  */
 class engine : public event::listener
 {
@@ -35,6 +36,14 @@ class engine : public event::listener
 
     window          _window;
     keyboard        _keyboard;
+
+    std::list<screen*> _screens_stack;
+    screen*            _next_screen;
+    bool               _close_screen;
+
+    void close_top_screen() throw(util::exception);
+
+    screen* top_screen() {return _screens_stack.back();}
 
   public:
     /**
@@ -66,6 +75,11 @@ class engine : public event::listener
      * Force the engine to stop.
      */
     void close();
+
+    /**
+     * Push a screen on the screen stack.
+     */
+    void push_screen(screen* scr);
 
     void notify(const event::event& evt) throw(util::exception);
 };
