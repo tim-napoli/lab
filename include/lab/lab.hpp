@@ -23,6 +23,11 @@
 #include "lab/json/json.hpp"
 
 #include "lab/gfx/renderer.hpp"
+#include "lab/gfx/vertex-buffer.hpp"
+#include "lab/gfx/program.hpp"
+#include "lab/gfx/framebuffer.hpp"
+#include "lab/gfx/texture.hpp"
+#include "lab/gfx/light.hpp"
 
 namespace lab {
 

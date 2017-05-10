@@ -13,6 +13,9 @@ pkg_search_module(GLM REQUIRED glm)
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 add_subdirectory(src)
+add_subdirectory(samples)
+
+file(COPY samples/data DESTINATION .)
 
 find_package(CxxTest)
 if(CXXTEST_FOUND)

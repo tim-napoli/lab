@@ -6,7 +6,8 @@ target_link_libraries(
     lab-parser
     lab-event
     lab-gfx
-    ${GLFW_LIBRARIES}
     ${OPENGL_gl_LIBRARY}
+    ${GLFW_LIBRARIES}
     ${GLEW_LIBRARIES}
+    ${SOIL_LIBRARIES}
 )
