@@ -53,10 +53,6 @@ void engine::start() throw(util::exception) {
     }
     glfwSetErrorCallback(&error_callback);
 
-    if (!glewInit()) {
-        throw util::exception("Cannot start GLEW");
-    }
-
     _window.register_listener(this);
     _window.register_listener(&_screen_manager);
     _keyboard.register_listener(this);
@@ -71,6 +67,11 @@ void engine::start() throw(util::exception) {
         glfwTerminate();
         throw ex;
     }
+
+    if (glewInit() != GLEW_OK) {
+        throw util::exception("Cannot start GLEW");
+    }
+
 }
 
 void engine::stop() throw(util::exception) {
