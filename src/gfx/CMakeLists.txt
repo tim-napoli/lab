@@ -6,4 +6,5 @@ add_library(
     framebuffer.cpp
     image.cpp
     light.cpp
+    program.cpp
 )
