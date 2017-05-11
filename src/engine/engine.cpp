@@ -75,8 +75,8 @@ void engine::start() throw(util::exception) {
 }
 
 void engine::stop() throw(util::exception) {
+    _screen_manager.stop(this);
     glfwTerminate();
-    // TODO gently stop of the screen manager.
 }
 
 void engine::start_screen(std::unique_ptr<screen> scr) {

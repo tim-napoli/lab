@@ -22,6 +22,14 @@ void screen_manager::update(engine_interface* intf) throw(util::exception) {
     }
 }
 
+void screen_manager::stop(engine_interface* intf) throw(util::exception) {
+    for (auto it = _screens.begin(); it != _screens.end(); it++) {
+        if (it->state != stopped) {
+            it->scr->stop(intf);
+        }
+    }
+}
+
 void screen_manager::push_screen(std::unique_ptr<screen> scr) {
     if (_screens.size() > 0) {
         unregister_listener(top_screen().scr.get());
