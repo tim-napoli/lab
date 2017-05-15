@@ -5,4 +5,5 @@ add_library(
     vertex-buffer.cpp
     framebuffer.cpp
     image.cpp
+    light.cpp
 )
