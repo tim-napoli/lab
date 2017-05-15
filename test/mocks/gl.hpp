@@ -8,6 +8,7 @@
 extern "C" {
 
 typedef int GLint;
+typedef unsigned int GLuint;
 
 void glViewport(GLint x, GLint y, GLint width, GLint height);
 
