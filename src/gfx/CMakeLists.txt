@@ -3,4 +3,6 @@ add_library(
     renderer.cpp
     texture.cpp
     vertex-buffer.cpp
+    framebuffer.cpp
+    image.cpp
 )
