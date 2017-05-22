@@ -17,6 +17,8 @@ typedef struct gl_mock_viewport {
 
 extern gl_mock_viewport_t gl_mock_viewport;
 
+#define GLEW_OK     0
+
 int glewInit();
 
 }

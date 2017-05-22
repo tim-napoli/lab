@@ -15,6 +15,6 @@ void glViewport(GLint x, GLint y, GLint width, GLint height) {
 
 int glewInit() {
     _glew_initialized = true;
-    return 1;
+    return GLEW_OK;
 }
 

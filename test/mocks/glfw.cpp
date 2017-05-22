@@ -67,7 +67,13 @@ bool glfwInit(void) {
     _key_events = std::vector<_glfw_key_event>();
 
     _should_exit = false;
-    _events_thread = std::thread(&_event_thread_func);
+    try {
+        _events_thread = std::thread(&_event_thread_func);
+    } catch (std::exception err) {
+        std::cout << "GLFW mock initialization error: " << err.what()
+                  << std::endl;
+        return false;
+    }
 
     return true;
 }
