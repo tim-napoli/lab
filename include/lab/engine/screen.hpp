@@ -11,6 +11,7 @@
 #include "lab/event/event.hpp"
 #include "lab/event/listener.hpp"
 #include "lab/event/source.hpp"
+#include "lab/engine/engine-interface.hpp"
 
 namespace lab { namespace engine {
 
@@ -28,31 +29,15 @@ namespace lab { namespace engine {
  * TODO let a screen be aware of the engine configuration (window dimensions,
  *      ticks / seconds, etc).
  */
-class screen : public event::source
-             , public event::listener
+class screen : public event::listener
 
 {
   public:
-    enum events : event::event::type {
-        /**
-         * Sent to order the engine to close this screen.
-         */
-        close,
+    virtual void start(engine_interface* intf) throw(util::exception) = 0;
 
-        /**
-         * Sent to order the engine to start a new screen.
-         * @param activity a pointer to the screen to start.
-         */
-        start_screen,
-    };
+    virtual void update(engine_interface* intf) throw(util::exception) = 0;
 
-    virtual void start() throw(util::exception) = 0;
-
-    virtual void update() throw(util::exception) = 0;
-
-    virtual void stop() throw(util::exception) = 0;
-
-    SOURCE_MAKE_ID(screen)
+    virtual void stop(engine_interface* intf) throw(util::exception) = 0;
 };
 
 }}

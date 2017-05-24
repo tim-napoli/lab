@@ -5,8 +5,9 @@
 
 namespace lab { namespace gfx {
 
-renderer::renderer(const json::json& cfg)
-    : module("renderer", cfg)
+renderer::renderer(int virtual_width, int virtual_height)
+    : _virtual_width(virtual_width)
+    , _virtual_height(virtual_height)
 {
 
 }
@@ -16,8 +17,7 @@ renderer::~renderer() {
 }
 
 void renderer::resize(int win_width, int win_height) {
-    glm::vec2 virt_dims(get_cfg()["virtual_width"].get_value().get<int>(),
-                        get_cfg()["virtual_height"].get_value().get<int>());
+    glm::vec2 virt_dims(_virtual_width, _virtual_height);
     glm::vec2 real_dims(win_width, win_height);
 
     glm::vec2 ratios = real_dims / virt_dims;
@@ -36,35 +36,6 @@ void renderer::resize(int win_width, int win_height) {
     _real_to_virt_matrix =
         glm::scale(glm::mat4(1.0), glm::vec3(ratio, ratio, 0.0))
       * glm::translate(glm::mat4(1.0), glm::vec3(-top_left.x, -top_left.y, 0.0));
-
-    send_event(event::event(renderer::events::resized, {
-        {"real_to_virt", util::value::build_raw(_real_to_virt_matrix)}
-    }));
-}
-
-void renderer::start() throw(util::exception) {
-    // Just check the configuration is OK.
-    get_cfg()["virtual_width"];
-    get_cfg()["virtual_height"];
-}
-
-void renderer::update() throw(util::exception) {
-
-}
-
-void renderer::stop() throw(util::exception) {
-
-}
-
-void renderer::notify(const event::event& evt)
-    throw(util::exception)
-{
-    if (evt.get_source_id() == engine::window::get_id()) {
-        if (evt.get_type() == engine::window::events::resized) {
-            resize(evt.get_value("width").get<int>(),
-                   evt.get_value("height").get<int>());
-        }
-    }
 }
 
 }}

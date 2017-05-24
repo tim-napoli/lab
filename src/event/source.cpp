@@ -29,5 +29,11 @@ void source::send_event(event event) throw(util::exception) {
     }
 }
 
+void source::relay_event(event event) throw(util::exception) {
+    for (auto it = _listeners.begin(); it != _listeners.end(); it++) {
+        (*it)->notify(event);
+    }
+}
+
 }}
 

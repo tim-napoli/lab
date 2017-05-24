@@ -15,6 +15,8 @@
 #include "lab/engine/window.hpp"
 #include "lab/engine/keyboard.hpp"
 #include "lab/engine/screen.hpp"
+#include "lab/engine/screen-manager.hpp"
+#include "lab/engine/engine-interface.hpp"
 
 namespace lab { namespace engine {
 
@@ -29,6 +31,7 @@ namespace lab { namespace engine {
  * system.
  */
 class engine : public event::listener
+             , public engine_interface
 {
   private:
     bool            _exit;
@@ -37,13 +40,7 @@ class engine : public event::listener
     window          _window;
     keyboard        _keyboard;
 
-    std::list<screen*> _screens_stack;
-    screen*            _next_screen;
-    bool               _close_screen;
-
-    void close_top_screen() throw(util::exception);
-
-    screen* top_screen() {return _screens_stack.back();}
+    screen_manager  _screen_manager;
 
   public:
     /**
@@ -56,12 +53,12 @@ class engine : public event::listener
     ~engine();
 
     /**
-     * Start the engine, every of its modules and the top activity.
+     * Start the engine.
      */
     void start() throw(util::exception);
 
     /**
-     * Run the engine loops until a module or the activity order to
+     * Run the engine loops until a module or a screen order to
      * stop.
      */
     void run() throw(util::exception);
@@ -77,9 +74,24 @@ class engine : public event::listener
     void close();
 
     /**
-     * Push a screen on the screen stack.
+     * Start a new screen.
      */
-    void push_screen(screen* scr);
+    void start_screen(std::unique_ptr<screen> scr);
+
+    /**
+     * Close the running screen.
+     */
+    void close_screen();
+
+    /**
+     * Get the window width.
+     */
+    int get_window_width() const {return _window.get_width();}
+
+    /**
+     * Get the window height.
+     */
+    int get_window_height() const {return _window.get_height();}
 
     void notify(const event::event& evt) throw(util::exception);
 };

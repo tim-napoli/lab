@@ -67,6 +67,10 @@ class window : public event::source
 
     void stop() throw(util::exception);
 
+    int get_width() const {return _width;}
+
+    int get_height() const {return _height;}
+
     SOURCE_MAKE_ID(window)
 };
 

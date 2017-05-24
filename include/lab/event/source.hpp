@@ -64,6 +64,8 @@ class source {
      */
     virtual void send_event(event event) throw(util::exception);
 
+    void relay_event(event event) throw(util::exception);
+
     SOURCE_MAKE_ID(source)
 };
 

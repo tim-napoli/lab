@@ -94,15 +94,19 @@ class keyboard_monitor : public event::listener {
 
 class fake_screen : public engine::screen {
   public:
-    void start() throw(util::exception) {
+    fake_screen() { }
+
+    ~fake_screen() { }
+
+    void start(engine::engine_interface* intf) throw(util::exception) {
 
     }
 
-    void update() throw(util::exception) {
+    void stop(engine::engine_interface* intf) throw(util::exception) {
 
     }
 
-    void stop() throw(util::exception) {
+    void update(engine::engine_interface* intf) throw(util::exception) {
 
     }
 
@@ -125,7 +129,7 @@ class EngineTestSuite : public CxxTest::TestSuite {
 
     void testEngineTicks() {
         engine::engine engine("test-ticker", 400, 300, false, 60);
-        engine.push_screen(new fake_screen());
+        engine.start_screen(std::unique_ptr<engine::screen>(new fake_screen()));
 
         try {
             engine.start();
@@ -151,7 +155,7 @@ class EngineTestSuite : public CxxTest::TestSuite {
 
     void testEngineWindowResize() {
         engine::engine engine("test-window", 400, 300, false, 60);
-        engine.push_screen(new fake_screen());
+        engine.start_screen(std::unique_ptr<engine::screen>(new fake_screen()));
         window_monitor monitor;
 
         engine._window.register_listener(&monitor);
@@ -179,13 +183,12 @@ class EngineTestSuite : public CxxTest::TestSuite {
 
     void testEngineWindowWrongResolution() {
         engine::engine engine("test-window-wrong-res", 123, 456, true, 60);
-        engine.push_screen(new fake_screen());
         TS_ASSERT_THROWS(engine.start(), util::exception);
     }
 
     void testEngineKeyboard() {
         engine::engine engine("test-keyboard", 400, 300, false, 60);
-        engine.push_screen(new fake_screen());
+        engine.start_screen(std::unique_ptr<engine::screen>(new fake_screen()));
         keyboard_monitor monitor;
 
         engine._keyboard.register_listener(&monitor);
@@ -217,7 +220,6 @@ class EngineTestSuite : public CxxTest::TestSuite {
         TS_ASSERT(monitor.get_released_count() == 2);
         TS_ASSERT(monitor.get_repeated_count() == 2);
     }
-
 };
 
 // ----------------------------------------------------------------------------
