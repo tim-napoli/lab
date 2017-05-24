@@ -28,6 +28,7 @@
 #include "lab/gfx/framebuffer.hpp"
 #include "lab/gfx/texture.hpp"
 #include "lab/gfx/light.hpp"
+#include "lab/gfx/image.hpp"
 
 namespace lab {
 
