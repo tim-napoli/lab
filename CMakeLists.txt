@@ -19,4 +19,3 @@ find_package(GLEW REQUIRED)
 pkg_search_module(GLFW REQUIRED glfw3)
 pkg_search_module(GLM REQUIRED glm)
 
-add_subdirectory(samples)

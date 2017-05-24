@@ -3,10 +3,12 @@
 
 namespace lab { namespace engine {
 
-window::window(const std::string& name, const json::json& cfg)
-        : module("window", cfg)
-        , _window(NULL)
+window::window(const std::string& name, int width, int height, bool fullscreen)
+        : _window(NULL)
         , _name(name)
+        , _width(width)
+        , _height(height)
+        , _fullscreen(fullscreen)
 {
 
 }
@@ -31,11 +33,17 @@ bool window::monitor_is_compatible_size(GLFWmonitor* monitor,
     return false;
 }
 
+void window::set_size(int width, int height) {
+    _width = width;
+    _height = height;
+}
+
 static void _on_framebuffer_resize(GLFWwindow* glfw_win, int width, int height)
 {
     window_user_data* win_data =
         (window_user_data*)glfwGetWindowUserPointer(glfw_win);
     window* win = win_data->win;
+    win->set_size(width, height);
     win->send_event(event::event(
         window::events::resized, {
             {"width", util::value::build<int>(width)},
@@ -53,19 +61,15 @@ void window::close() {
 }
 
 void window::start() throw(util::exception) {
-    int width       = get_cfg()["width"].get_value().get<int>();
-    int height      = get_cfg()["height"].get_value().get<int>();
-    bool fullscreen = get_cfg()["fullscreen"].get_value().get<bool>();
-
-    GLFWmonitor* monitor = (fullscreen) ? glfwGetPrimaryMonitor() : NULL;
+    GLFWmonitor* monitor = (_fullscreen) ? glfwGetPrimaryMonitor() : NULL;
     if (monitor) {
-        if (!monitor_is_compatible_size(monitor, width, height)) {
+        if (!monitor_is_compatible_size(monitor, _width, _height)) {
             throw util::exception("invalid window size for fullscreen mode");
         }
     }
 
     // XXX window hints needed ?
-    _window = glfwCreateWindow(width, height, _name.c_str(), monitor, NULL);
+    _window = glfwCreateWindow(_width, _height, _name.c_str(), monitor, NULL);
     if (_window == NULL) {
         throw util::exception("cannot create window");
     }
@@ -77,7 +81,7 @@ void window::start() throw(util::exception) {
     glfwSetWindowUserPointer(_window, window_data);
     glfwSetFramebufferSizeCallback(_window, &_on_framebuffer_resize);
 
-    resize(width, height);
+    resize(_width, _height);
 }
 
 void window::update() throw(util::exception) {
@@ -95,10 +99,6 @@ void window::stop() throw(util::exception) {
         delete win_data;
         glfwDestroyWindow(_window);
     }
-}
-
-void window::notify(const event::event& evt) throw(util::exception) {
-
 }
 
 }}

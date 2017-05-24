@@ -16,11 +16,13 @@ namespace lab { namespace engine {
 /**
  * Module that handles the window.
  */
-class window : public module
+class window : public event::source
 {
   private:
     GLFWwindow* _window;
     std::string _name;
+    int         _width, _height;
+    bool        _fullscreen;
 
     bool monitor_is_compatible_size(GLFWmonitor* monitor,
                                     int width, int height);
@@ -41,7 +43,7 @@ class window : public module
         resized,
     };
 
-    window(const std::string& name, const json::json& cfg);
+    window(const std::string& name, int width, int height, bool fullscreen);
 
     ~window();
 
@@ -50,6 +52,8 @@ class window : public module
      * event.
      */
     void resize(int width, int height);
+
+    void set_size(int width, int height);
 
     /**
      * Close the window. Make the window sending a window::events::closed
@@ -62,8 +66,6 @@ class window : public module
     void update() throw(util::exception);
 
     void stop() throw(util::exception);
-
-    void notify(const event::event& evt) throw(util::exception);
 
     SOURCE_MAKE_ID(window)
 };

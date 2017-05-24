@@ -4,7 +4,6 @@
 namespace lab { namespace engine {
 
 keyboard::keyboard()
-        : module("window", json::json(util::value("")))
 {
 
 }
@@ -54,10 +53,6 @@ void keyboard::update() throw(util::exception) {
 void keyboard::stop() throw(util::exception) {
     GLFWwindow* window = glfwGetCurrentContext();
     glfwSetKeyCallback(window, nullptr);
-}
-
-void keyboard::notify(const event::event& evt) throw(util::exception) {
-
 }
 
 }}

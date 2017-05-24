@@ -18,7 +18,7 @@ namespace lab { namespace engine {
  * This module *must* be started (means added to the engine) after the
  * lab::engine::window module.
  */
-class keyboard : public module
+class keyboard : public event::source
 {
   public:
     /**

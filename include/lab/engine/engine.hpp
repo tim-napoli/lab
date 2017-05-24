@@ -12,7 +12,8 @@
 #include "lab/event/listener.hpp"
 #include "lab/event/source.hpp"
 #include "lab/engine/module.hpp"
-#include "lab/engine/module-manager.hpp"
+#include "lab/engine/window.hpp"
+#include "lab/engine/keyboard.hpp"
 
 namespace lab { namespace engine {
 
@@ -27,18 +28,21 @@ namespace lab { namespace engine {
  * system. It listens to every modules and the currently running activity.
  */
 class engine : public event::listener
-             , public event::source
 {
   private:
     bool            _exit;
     double          _refresh_rate;    /// In seconds.
-    module_manager  _module_manager;
+
+    window          _window;
+    keyboard        _keyboard;
 
   public:
     /**
      * @param ticks_pers_second Times the engine ticks every seconds.
      */
-    engine(int ticks_per_second);
+    engine(const std::string& game_name,
+           int window_width, int window_height, bool fullscreen,
+           int ticks_per_second);
 
     ~engine();
 
@@ -62,11 +66,6 @@ class engine : public event::listener
      * Force the engine to stop.
      */
     void close();
-
-    /**
-     * Add a module to the engine.
-     */
-    void plug_module(std::unique_ptr<module> module);
 
     void notify(const event::event& evt) throw(util::exception);
 };

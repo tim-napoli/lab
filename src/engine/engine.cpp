@@ -3,16 +3,17 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "lab/engine/engine.hpp"
-#include "lab/engine/window.hpp"
 
 namespace lab { namespace engine {
 
-engine::engine(int ticks_per_second)
+engine::engine(const std::string& game_name,
+               int window_width, int window_height, bool fullscreen,
+               int ticks_per_second)
         : event::listener()
-        , event::source()
         , _exit(false)
         , _refresh_rate(1.0 / ticks_per_second)
-        , _module_manager()
+        , _window(game_name, window_width, window_height, fullscreen)
+        , _keyboard()
 {
 
 }
@@ -26,7 +27,8 @@ void engine::run() throw(util::exception) {
     while (!_exit) {
         double current_time = glfwGetTime();
 
-        _module_manager.update();
+        _keyboard.update();
+        _window.update();
 
         // Sleeping
         double running_time = glfwGetTime() - current_time;
@@ -54,8 +56,12 @@ void engine::start() throw(util::exception) {
         throw util::exception("Cannot start GLEW");
     }
 
+    _window.register_listener(this);
+    _keyboard.register_listener(this);
+
     try {
-        _module_manager.start();
+        _window.start();
+        _keyboard.start();
     } catch (util::exception ex) {
         // We terminate GLFW in case the process will try to restart an
         // engine (like tests).
@@ -65,16 +71,11 @@ void engine::start() throw(util::exception) {
 }
 
 void engine::stop() throw(util::exception) {
-    _module_manager.stop();
     glfwTerminate();
 }
 
 void engine::close() {
     _exit = true;
-}
-
-void engine::plug_module(std::unique_ptr<module> module) {
-    _module_manager.plug_module(std::move(module));
 }
 
 void engine::notify(const event::event& evt) throw(util::exception) {
