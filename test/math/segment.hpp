@@ -1,22 +1,11 @@
 #include <ctime>
 #include <cxxtest/TestSuite.h>
+#include "test/math/common.hpp"
 #include "lab/math/segment.hpp"
 
 using namespace lab;
 using namespace lab::math;
-
-float gen_float(float a, float b) {
-    return ((rand() % ((int)(b - a) * 10000)) / 10000.0) + a;
-}
-
-glm::vec2 gen_vec2(float xmin, float xmax, float ymin, float ymax) {
-    return glm::vec2(gen_float(xmin, xmax), gen_float(ymin, ymax));
-}
-
-std::ostream& operator<<(std::ostream& stream, glm::vec2 v) {
-    stream << "(" << v.x << ", " << v.y << ")";
-    return stream;
-}
+using namespace lab::test;
 
 class SegmentTestSuite : public CxxTest::TestSuite {
   public:
