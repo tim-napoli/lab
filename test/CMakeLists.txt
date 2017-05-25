@@ -6,5 +6,6 @@ add_subdirectory(json)
 add_subdirectory(parser)
 add_subdirectory(engine)
 #add_subdirectory(gfx)
+add_subdirectory(math)
 
 add_subdirectory(mocks)
