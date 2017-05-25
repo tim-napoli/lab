@@ -15,14 +15,6 @@ segment::~segment() {
 
 }
 
-float determinant(glm::vec2 a, glm::vec2 b) {
-    return a.x * b.y - b.x * a.y;
-}
-
-bool is_in_range(float x, float a, float b) {
-    return float_are_equal(std::abs(b - a), std::abs(a - x) + std::abs(b - x));
-}
-
 util::optional<glm::vec2>
 segment::get_intersection_colinears(const segment& other) const
 {

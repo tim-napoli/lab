@@ -12,5 +12,13 @@ bool vec2_are_equal(glm::vec2 a, glm::vec2 b) {
     return float_are_equal(a.x, b.x) && float_are_equal(a.y, b.y);
 }
 
+float determinant(glm::vec2 a, glm::vec2 b) {
+    return a.x * b.y - b.x * a.y;
+}
+
+bool is_in_range(float x, float a, float b) {
+    return float_are_equal(std::abs(b - a), std::abs(a - x) + std::abs(b - x));
+}
+
 }}
 
