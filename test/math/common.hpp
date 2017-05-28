@@ -3,12 +3,15 @@
 
 #include <iostream>
 #include <glm/glm.hpp>
+#include "lab/math/box.hpp"
 
 namespace lab { namespace test {
 
 float gen_float(float a, float b);
 
 glm::vec2 gen_vec2(float xmin, float xmax, float ymin, float ymax);
+
+math::box gen_box(float xmin, float xmax, float ymin, float ymax);
 
 }}
 

@@ -3,4 +3,5 @@ add_library(
     common.cpp
     segment.cpp
     triangle.cpp
+    box.cpp
 )
