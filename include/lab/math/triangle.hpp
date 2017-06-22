@@ -14,6 +14,10 @@ class triangle {
 
     ~triangle();
 
+    glm::vec2 get_a() const {return _a;}
+    glm::vec2 get_b() const {return _b;}
+    glm::vec2 get_c() const {return _c;}
+
     /**
      * @return the triangle area.
      */

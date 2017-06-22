@@ -18,9 +18,16 @@ class segment {
     get_intersection_crossing(const segment& other) const;
 
   public:
+    segment();
     segment(glm::vec2 start, glm::vec2 stop);
 
     ~segment();
+
+    glm::vec2 get_a() const {return _a;}
+    glm::vec2 get_b() const {return _b;}
+
+    void set_a(glm::vec2 a) {_a = a;}
+    void set_b(glm::vec2 b) {_b = b;}
 
     glm::vec2 get_direction() const {return _b - _a;}
 

@@ -37,6 +37,9 @@ class box {
     float bottom() const {return _bottom_left.y;}
     float top() const {return _top_right.y;}
 
+    glm::vec2 bottom_left() const {return _bottom_left;}
+    glm::vec2 top_right() const {return _top_right;}
+
     float width() const {return right() - left();}
     float height() const {return top() - bottom();}
     glm::vec2 get_dimensions() const {return _top_right - _bottom_left;}

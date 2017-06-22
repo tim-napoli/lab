@@ -4,6 +4,8 @@
 
 namespace lab { namespace math {
 
+segment::segment() : _a(0), _b(0) { }
+
 segment::segment(glm::vec2 a, glm::vec2 b)
         : _a(a)
         , _b(b)
