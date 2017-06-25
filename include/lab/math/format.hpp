@@ -24,6 +24,22 @@ std::ostream& operator<<(std::ostream& os, triangle t);
 
 std::ostream& operator<<(std::ostream& os, box b);
 
+// SVG formater ---------------------------------------------------------------
+
+void svg_header(std::ostream& os, float width, float height);
+
+void svg_vec2(std::ostream& os, glm::vec2 v);
+
+void svg_segment(std::ostream& os, segment s);
+
+void svg_triangle(std::ostream& os, triangle t);
+
+void svg_box(std::ostream& os, box b);
+
+void svg_footer(std::ostream& os);
+
+// ----------------------------------------------------------------------------
+
 }}
 
 #endif
