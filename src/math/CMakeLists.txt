@@ -4,5 +4,6 @@ add_library(
     segment.cpp
     triangle.cpp
     box.cpp
+    polygon.cpp
     format.cpp
 )

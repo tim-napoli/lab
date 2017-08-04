@@ -2,7 +2,7 @@
 
 namespace lab { namespace math {
 
-const float epsilon = 1E-3;
+const float epsilon = 1E-6;
 
 bool float_are_equal(float a, float b) {
     return std::abs(b - a) < epsilon;
