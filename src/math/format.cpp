@@ -80,6 +80,18 @@ void svg_box(std::ostream& os, box b) {
       << "/>" << std::endl;
 }
 
+void svg_path(std::ostream& os, std::vector<glm::vec2> points) {
+    os << "\t<polygon " << "points=\"";
+    for (auto it = points.begin(); it != points.end(); it++) {
+        os << it->x << " " << it->y << " ";
+    }
+    os                  << "\" "
+                        << "fill=\"none\" "
+                        << "stroke=\"black\" "
+                        << "stroke-width=\"0.01\" "
+      << "/>" << std::endl;
+}
+
 void svg_footer(std::ostream& os) {
     os << "</svg>" << std::endl;
 }

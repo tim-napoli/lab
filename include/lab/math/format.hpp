@@ -9,6 +9,7 @@
 #define _lab_math_format_hpp_
 
 #include <iostream>
+#include <vector>
 #include <glm/glm.hpp>
 #include "lab/math/segment.hpp"
 #include "lab/math/triangle.hpp"
@@ -35,6 +36,8 @@ void svg_segment(std::ostream& os, segment s);
 void svg_triangle(std::ostream& os, triangle t);
 
 void svg_box(std::ostream& os, box b);
+
+void svg_path(std::ostream& os, std::vector<glm::vec2> points);
 
 void svg_footer(std::ostream& os);
 
