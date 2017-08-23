@@ -21,16 +21,19 @@ namespace lab { namespace gfx {
 class light {
   private:
     glm::vec3 _position;
+    float     _radius;
     glm::vec3 _color;
 
   public:
     light();
 
-    light(glm::vec3 position, glm::vec3 color);
+    light(glm::vec3 position, float radius, glm::vec3 color);
 
     ~light();
 
     glm::vec3 get_position() const {return _position;}
+
+    float get_radius() const {return _radius;}
 
     glm::vec3 get_color() const {return _color;}
 
