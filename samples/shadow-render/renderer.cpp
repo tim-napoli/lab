@@ -20,6 +20,13 @@ void renderer::start(engine::engine_interface* intf)
         intf->get_window_height()
     );
 
+    _light_position = glm::vec3(VWIDTH / 2, VHEIGHT / 2, 200);
+    _projection_light = gfx::light(
+        _light_position,
+        100.0f,
+        glm::vec3(0.8, 0.5, 0.3)
+    );
+
     _canvas_fb = gfx::framebuffer(VWIDTH, VHEIGHT);
     _canvas_image = gfx::image(
         (std::vector<gfx::texture>) {
@@ -33,11 +40,18 @@ void renderer::start(engine::engine_interface* intf)
         DATA_PATH"canvas.vert",
         DATA_PATH"canvas.frag"
     );
-    _light_position = glm::vec3(VWIDTH / 2, VHEIGHT / 2, 200);
-    _projection_light = gfx::light(
-        _light_position,
-        100.0f,
-        glm::vec3(0.8, 0.5, 0.3)
+
+    _shadows_fb = gfx::framebuffer(VWIDTH, VHEIGHT);
+    _shadows_image = gfx::image(
+        (std::vector<gfx::texture>) {
+            gfx::texture::load(DATA_PATH"whole-scene.png")
+        },
+        glm::vec2(0),
+        glm::vec2(VWIDTH, VHEIGHT)
+    );
+    _shadows_prg = gfx::program::load(
+        DATA_PATH"shadows.vert",
+        DATA_PATH"shadows.frag"
     );
 
     _screen_prg = gfx::program::load(
@@ -82,7 +96,18 @@ void renderer::canvas_render_pass() {
 }
 
 void renderer::shadow_render_pass_shadows() {
+    use_framebuffer(_shadows_fb);
+    _shadows_prg.set_uniform_mat4(
+        "projection_matrix", get_projection_matrix_ptr()
+    );
+    _shadows_prg.set_uniform_sampler2d(
+        "tex", 0
+    );
+    _shadows_prg.use();
 
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    _shadows_image.draw();
 }
 
 void renderer::shadow_render_pass_blur() {
@@ -105,13 +130,16 @@ void renderer::render(glm::vec2 light_pos) {
     // Finally, we will draw to the screen the mix of the canvas and the
     // shadows frambeuffers on the screen.
     canvas_render_pass();
+    shadow_render_pass();
 
     use_screen();
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
     _screen_prg.use();
     _screen_prg.set_uniform_sampler2d("canvas_tex", 0);
+    _screen_prg.set_uniform_sampler2d("shadows_tex", 1);
     _canvas_fb.use_texture(GL_TEXTURE0);
+    _shadows_fb.use_texture(GL_TEXTURE1);
     _screen_points.draw();
 }
 
@@ -121,6 +149,10 @@ void renderer::stop(engine::engine_interface* intf)
     _canvas_prg.destroy();
     _canvas_image.destroy();
     _canvas_fb.destroy();
+
+    _shadows_fb.destroy();
+    _shadows_image.destroy();
+    _shadows_fb.destroy();
 
     _screen_prg.destroy();
     _screen_points.destroy();

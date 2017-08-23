@@ -5,10 +5,15 @@
 
 class renderer : public lab::gfx::renderer {
   private:
+    lab::gfx::light       _projection_light;
+
     lab::gfx::framebuffer _canvas_fb;
     lab::gfx::image       _canvas_image;
-    lab::gfx::light       _projection_light;
     lab::gfx::program     _canvas_prg;
+
+    lab::gfx::framebuffer _shadows_fb;
+    lab::gfx::image       _shadows_image;
+    lab::gfx::program     _shadows_prg;
 
     lab::gfx::program       _screen_prg;
     lab::gfx::vertex_buffer _screen_points;
