@@ -24,7 +24,7 @@ void renderer::start(engine::engine_interface* intf)
     _projection_light = gfx::light(
         _light_position,
         100.0f,
-        glm::vec3(0.8, 0.5, 0.3)
+        glm::vec3(0.8, 0.5, 0.1)
     );
 
     _canvas_fb = gfx::framebuffer(VWIDTH, VHEIGHT);
@@ -52,6 +52,21 @@ void renderer::start(engine::engine_interface* intf)
     _shadows_prg = gfx::program::load(
         DATA_PATH"shadows.vert",
         DATA_PATH"shadows.frag"
+    );
+
+    for (int i = 0; i < BLUR_NUMBER_OF_PASSES; i++) {
+        _blur_intermediate_fbs[i] = gfx::framebuffer(
+            VWIDTH >> i, VHEIGHT >> i
+        );
+    }
+    _blur_intermediate_prg = gfx::program::load(
+        DATA_PATH"blur.vert",
+        DATA_PATH"blur.frag"
+    );
+    _blur_fb = gfx::framebuffer(VWIDTH, VHEIGHT);
+    _blur_mix_prg = gfx::program::load(
+        DATA_PATH"mix.vert",
+        DATA_PATH"mix.frag"
     );
 
     _screen_prg = gfx::program::load(
@@ -111,7 +126,30 @@ void renderer::shadow_render_pass_shadows() {
 }
 
 void renderer::shadow_render_pass_blur() {
+    _shadows_fb.use_texture(GL_TEXTURE0);
+    _blur_intermediate_prg.set_uniform_sampler2d(
+        "tex", 0
+    );
+    _blur_intermediate_prg.use();
+    for (int i = 0; i < BLUR_NUMBER_OF_PASSES; i++) {
+        use_framebuffer(_blur_intermediate_fbs[i]);
+        _screen_points.draw();
+    }
 
+    use_framebuffer(_blur_fb);
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    _blur_mix_prg.set_uniform_sampler2d(
+        "tex", 0
+    );
+    _blur_mix_prg.use();
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ZERO, GL_SRC_COLOR);
+    for (int i = 0; i < BLUR_NUMBER_OF_PASSES; i++) {
+        _blur_intermediate_fbs[i].use_texture(GL_TEXTURE0);
+        _screen_points.draw();
+    }
+    glDisable(GL_BLEND);
 }
 
 void renderer::shadow_render_pass() {
@@ -139,7 +177,7 @@ void renderer::render(glm::vec2 light_pos) {
     _screen_prg.set_uniform_sampler2d("canvas_tex", 0);
     _screen_prg.set_uniform_sampler2d("shadows_tex", 1);
     _canvas_fb.use_texture(GL_TEXTURE0);
-    _shadows_fb.use_texture(GL_TEXTURE1);
+    _blur_fb.use_texture(GL_TEXTURE1);
     _screen_points.draw();
 }
 
@@ -153,6 +191,13 @@ void renderer::stop(engine::engine_interface* intf)
     _shadows_fb.destroy();
     _shadows_image.destroy();
     _shadows_fb.destroy();
+
+    for (int i = 0; i < BLUR_NUMBER_OF_PASSES; i++) {
+        _blur_intermediate_fbs[i].destroy();
+    }
+    _blur_intermediate_prg.destroy();
+    _blur_fb.destroy();
+    _blur_mix_prg.destroy();
 
     _screen_prg.destroy();
     _screen_points.destroy();

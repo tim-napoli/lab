@@ -3,6 +3,8 @@
 
 #include "lab/lab.hpp"
 
+#define BLUR_NUMBER_OF_PASSES   3
+
 class renderer : public lab::gfx::renderer {
   private:
     lab::gfx::light       _projection_light;
@@ -14,6 +16,11 @@ class renderer : public lab::gfx::renderer {
     lab::gfx::framebuffer _shadows_fb;
     lab::gfx::image       _shadows_image;
     lab::gfx::program     _shadows_prg;
+
+    lab::gfx::framebuffer _blur_intermediate_fbs[BLUR_NUMBER_OF_PASSES];
+    lab::gfx::program     _blur_intermediate_prg;
+    lab::gfx::framebuffer _blur_fb;
+    lab::gfx::program     _blur_mix_prg;
 
     lab::gfx::program       _screen_prg;
     lab::gfx::vertex_buffer _screen_points;
