@@ -39,6 +39,15 @@ class textures_manager:
     def load(self, name):
         return ImageTk.PhotoImage(Image.open('{}/{}'.format(self.path, name)))
 
+    def load_all(self):
+        """Load every textures available in the data folder. Returns for
+        each texture a couple (name, image).
+        """
+        return [
+            (texture, self.load(texture))
+            for texture in self.manifest.textures
+        ]
+
 class manager:
     """The data manager is a class that will help to manage the
     project data directory.

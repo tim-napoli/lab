@@ -92,6 +92,9 @@ class navigation_pane(ttk.Treeview):
         rowid = self.identify_row(y)
         return self.parent(rowid)
 
+    def get_item_at(self, x, y):
+        return self.identify('item', x, y)
+
     def rename(self, event):
         if (self.entry_popup != None):
             self.release_rename_popup()

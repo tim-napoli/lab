@@ -4,6 +4,7 @@ from tkinter.filedialog import askopenfilename, askdirectory
 
 from ui import navigation_pane
 from ui import texture_pane
+from ui import textures_pane
 from pylab.data import manifest
 from pylab.data import manager
 
@@ -54,12 +55,20 @@ class window(tk.Frame):
         texture_edit_pane = texture_pane.texture_pane(self, texture)
         self.emplace_edit_frame(texture_edit_pane)
 
+    def show_textures_pane(self):
+        pane = textures_pane.textures_pane(self, self.manager)
+        self.emplace_edit_frame(pane)
+
     def edit_data(self, event):
         self.navigation_pane.release_rename_popup()
-        edited_element = self.navigation_pane.get_data_name_at(event.x, event.y)
-        parent = self.navigation_pane.get_data_parent_at(event.x, event.y)
-        if (parent == self.navigation_pane.textures_node):
-            self.start_texture_edition(edited_element)
+        edited_item = self.navigation_pane.get_item_at(event.x, event.y)
+        if edited_item == self.navigation_pane.textures_node:
+            self.show_textures_pane()
+        else:
+            edited_element = self.navigation_pane.get_data_name_at(event.x, event.y)
+            parent = self.navigation_pane.get_data_parent_at(event.x, event.y)
+            if (parent == self.navigation_pane.textures_node):
+                self.start_texture_edition(edited_element)
 
     def init_edition_gui(self):
         self.navigation_pane = navigation_pane.navigation_pane(self)
