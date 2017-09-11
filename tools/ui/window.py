@@ -55,6 +55,7 @@ class window(tk.Frame):
         self.emplace_edit_frame(texture_edit_pane)
 
     def edit_data(self, event):
+        self.navigation_pane.release_rename_popup()
         edited_element = self.navigation_pane.get_data_name_at(event.x, event.y)
         parent = self.navigation_pane.get_data_parent_at(event.x, event.y)
         if (parent == self.navigation_pane.textures_node):

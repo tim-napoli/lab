@@ -61,6 +61,7 @@ class navigation_pane(ttk.Treeview):
         popup.tk_popup(event.x_root, event.y_root, 0)
 
     def popup_menu(self, event):
+        self.release_rename_popup()
         clicked_element = self.identify('item', event.x, event.y)
         if (clicked_element == self.textures_node):
             self.texture_node_popup_menu(event)
@@ -70,16 +71,17 @@ class navigation_pane(ttk.Treeview):
                 self.clicked_texture = self.get_data_name_at(event.x, event.y)
                 self.texture_popup_menu(event)
 
+    def release_rename_popup(self):
+        if (self.entry_popup != None):
+            self.entry_popup.destroy()
+            self.entry_popup = None
+            self.renamed_element = None
+
     def rename_element(self):
         new_name = self.entry_popup.get()
-
         if (self.renamed_element_parent == self.textures_node):
             self.manager.textures.rename(self.renamed_element, new_name)
-
-        self.entry_popup.destroy()
-        self.entry_popup = None
-        self.renamed_element = None
-
+        self.release_rename_popup()
         self.refresh_manifest()
 
     def get_data_name_at(self, x, y):
@@ -92,9 +94,7 @@ class navigation_pane(ttk.Treeview):
 
     def rename(self, event):
         if (self.entry_popup != None):
-            self.entry_popup.destroy()
-            self.entry_popup = None
-            self.renamed_element = None
+            self.release_rename_popup()
 
         self.renamed_element = self.get_data_name_at(event.x, event.y)
 
