@@ -1,7 +1,6 @@
 import os
 import os.path
 import shutil
-from PIL import Image, ImageTk
 
 from pylab.data import manifest
 from pylab.gfx import texture
@@ -37,7 +36,8 @@ class textures_manager:
         self.manifest.save()
 
     def load(self, name):
-        return ImageTk.PhotoImage(Image.open('{}/{}'.format(self.path, name)))
+        """Returns the absolute path of the given texture."""
+        return '{}/{}'.format(self.path, name)
 
     def load_all(self):
         """Load every textures available in the data folder. Returns for
