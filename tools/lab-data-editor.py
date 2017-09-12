@@ -1,10 +1,11 @@
-import tkinter
+import sys
+
+from PyQt5.QtWidgets import QApplication
 
 import pylab
-import ui
+import qtui
 
 if __name__ == '__main__':
-    root = tkinter.Tk()
-    win = ui.window.window(root)
-    root.mainloop()
-
+    app = QApplication(sys.argv)
+    window = qtui.window.window()
+    sys.exit(app.exec_())
