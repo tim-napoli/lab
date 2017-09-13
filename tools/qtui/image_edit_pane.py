@@ -1,10 +1,41 @@
-from PyQt5.QtWidgets import QWidget, QListView, QLabel, QHBoxLayout, QVBoxLayout, QPushButton
+from PyQt5.QtWidgets import QWidget, QListView, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QDialog
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 
+from qtui import textures_edit_pane
+
+class texture_popup(QDialog):
+    def __init__(self, textures):
+        super().__init__()
+        self.setWindowTitle("Image's texture selection")
+        self.clicked_texture = None
+
+        textures_grid = textures_edit_pane.textures_edit_pane(
+            self, textures, self.on_click
+        )
+
+        select_button = QPushButton("Cancel", self)
+        select_button.clicked.connect(self.reject)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(textures_grid)
+        vbox.addWidget(select_button)
+        self.setLayout(vbox)
+
+    def show(self):
+        return self.exec_()
+
+    def on_click(self, miniature):
+        self.clicked_texture = miniature.texture
+        self.accept()
+
+    def get_result(self):
+        return self.clicked_texture
+
 class textures_list(QWidget):
-    def __init__(self, parent, image):
+    def __init__(self, parent, manager, image):
         super().__init__(parent)
 
+        self.manager = manager
         self.image = image
         self.build_list_view()
         self.build_button_bar()
@@ -16,6 +47,7 @@ class textures_list(QWidget):
 
     def add_texture_item(self, texture):
         item = QStandardItem(texture)
+        item.setEditable(False)
         self.model.appendRow(item)
 
     def build_list_view(self):
@@ -27,6 +59,7 @@ class textures_list(QWidget):
 
     def build_button_bar(self):
         add_button = QPushButton("Add", self)
+        add_button.clicked.connect(self.add_texture)
         remove_button = QPushButton("Remove", self)
         up_button = QPushButton("Move up", self)
         down_button = QPushButton("Move down", self)
@@ -39,14 +72,22 @@ class textures_list(QWidget):
         hbox.addWidget(down_button)
         self.button_bar.setLayout(hbox)
 
+    def add_texture(self):
+        textures = self.manager.textures.load_all()
+        dialog = texture_popup(textures)
+        if dialog.show() == QDialog.Accepted:
+            texture = dialog.get_result()
+            self.add_texture_item(texture)
+            self.image.add_texture(texture)
+
 class hot_point_editor(QWidget):
     pass
 
 class image_edit_pane(QWidget):
-    def __init__(self, parent, image):
+    def __init__(self, parent, manager, image):
         super().__init__(parent)
 
-        list_view = textures_list(self, image)
+        list_view = textures_list(self, manager, image)
 
         vbox = QVBoxLayout()
         vbox.addWidget(list_view)

@@ -6,6 +6,9 @@ class image:
         self.textures = textures
         self.hot_point = hot_point
 
+    def add_texture(self, texture):
+        self.textures.append(texture)
+
     def save(self, path):
         with open(path, 'w+') as f:
             content = json.dumps({
