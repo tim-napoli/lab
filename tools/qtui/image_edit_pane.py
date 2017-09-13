@@ -54,6 +54,22 @@ class textures_list(QWidget):
     def remove_texture_item(self, item):
         self.model.removeRows(item.row(), 1)
 
+    def move_up_texture_item(self, item):
+        row = item.row()
+        if row > 0:
+            self.model.takeRow(row)
+            self.model.insertRow(row - 1, item)
+            index = self.model.indexFromItem(item)
+            self.list_view.setCurrentIndex(index)
+
+    def move_down_texture_item(self, item):
+        row = item.row()
+        if row < self.model.rowCount() - 1:
+            self.model.takeRow(row)
+            self.model.insertRow(row + 1, item)
+            index = self.model.indexFromItem(item)
+            self.list_view.setCurrentIndex(index)
+
     def build_list_view(self):
         self.list_view = QListView(self)
         self.model = QStandardItemModel(self.list_view)
@@ -67,7 +83,9 @@ class textures_list(QWidget):
         remove_button = QPushButton("Remove", self)
         remove_button.clicked.connect(self.remove_texture)
         up_button = QPushButton("Move up", self)
+        up_button.clicked.connect(self.move_up_texture)
         down_button = QPushButton("Move down", self)
+        down_button.clicked.connect(self.move_down_texture)
 
         self.button_bar = QWidget(self)
         hbox = QHBoxLayout()
@@ -93,6 +111,24 @@ class textures_list(QWidget):
             texture = item.text()
             self.remove_texture_item(item)
             self.image.remove_texture(texture)
+            self.manager.images.save(self.image_name, self.image)
+
+    def move_up_texture(self):
+        index = self.list_view.currentIndex()
+        item = self.model.itemFromIndex(index)
+        if item != None:
+            self.move_up_texture_item(item)
+            texture = item.text()
+            self.image.move_up_texture(texture)
+            self.manager.images.save(self.image_name, self.image)
+
+    def move_down_texture(self):
+        index = self.list_view.currentIndex()
+        item = self.model.itemFromIndex(index)
+        if item != None:
+            self.move_down_texture_item(item)
+            texture = item.text()
+            self.image.move_down_texture(texture)
             self.manager.images.save(self.image_name, self.image)
 
 class hot_point_editor(QWidget):

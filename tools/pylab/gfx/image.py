@@ -12,6 +12,28 @@ class image:
     def remove_texture(self, texture):
         self.textures.remove(texture)
 
+    def move_up_texture(self, texture):
+        """Move a texture to the front of the texture list.
+        Return True is the texture is effectively moved.
+        """
+        index = self.textures.index(texture)
+        if index > 0:
+            self.textures.pop(index)
+            self.textures.insert(index - 1, texture)
+            return True
+        return False
+
+    def move_down_texture(self, texture):
+        """Move a texture to the front of the texture list.
+        Return True is the texture is effectively moved.
+        """
+        index = self.textures.index(texture)
+        if index < len(self.textures) - 1:
+            self.textures.pop(index)
+            self.textures.insert(index + 1, texture)
+            return True
+        return False
+
     def save(self, path):
         with open(path, 'w+') as f:
             content = json.dumps({
