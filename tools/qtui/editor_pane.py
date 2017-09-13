@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel
 
 from qtui import navigation_pane
 from qtui import texture_edit_pane
+from qtui import textures_edit_pane
 
 class editor_pane(QWidget):
     def __init__(self, parent, manager):
@@ -35,8 +36,16 @@ class editor_pane(QWidget):
         pane = texture_edit_pane.texture_edit_pane(self, texture_path)
         self.emplace_edit_pane(pane)
 
+    def start_textures_edit_pane(self):
+        textures = self.manager.textures.load_all()
+        pane = textures_edit_pane.textures_edit_pane(self, textures)
+        self.emplace_edit_pane(pane)
+
     def on_navigation_pane_item_click(self, index):
         item = self.navigation_pane.model.itemFromIndex(index)
-        parent = self.navigation_pane.model.parent(index)
-        if parent == self.navigation_pane.textures_node:
-            self.start_texture_edit_pane(item.text())
+        if index == self.navigation_pane.textures_node:
+            self.start_textures_edit_pane()
+        else:
+            parent = self.navigation_pane.model.parent(index)
+            if parent == self.navigation_pane.textures_node:
+                self.start_texture_edit_pane(item.text())
