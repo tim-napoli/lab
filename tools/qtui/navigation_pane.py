@@ -81,7 +81,9 @@ class navigation_pane(QTreeView):
 
 # Images management -----------------------------------------------------------
     def add_image_item(self, name):
-        self.images_item.appendRow(QStandardItem(name))
+        item = QStandardItem(name)
+        self.images_item.appendRow(item)
+        return item
 
     def add_images_node(self):
         self.images_item = QStandardItem("Images")
@@ -91,11 +93,25 @@ class navigation_pane(QTreeView):
         self.model.appendRow(self.images_item)
         self.images_node = self.model.indexFromItem(self.images_item)
 
+    def create_image(self):
+        name = self.manager.manifest.get_new_image_name()
+        self.manager.images.create(name)
+        item = self.add_image_item(name)
+        index = self.model.indexFromItem(item)
+        self.setCurrentIndex(index)
+
+    def show_images_menu(self, point):
+        menu = QMenu()
+        menu.addAction("Create", self.create_image)
+        menu.exec_(self.mapToGlobal(point))
+
 # -----------------------------------------------------------------------------
     def on_context_menu(self, point):
         item = self.indexAt(point)
         if item == self.textures_node:
             self.show_textures_menu(point)
+        elif item == self.images_node:
+            self.show_images_menu(point)
         else:
             parent = self.model.parent(item)
             if parent == self.textures_node:

@@ -7,6 +7,7 @@ class manifest:
         self.images = images
         self.animations = animations
 
+# Textures --------------------------------------------------------------------
     def add_texture(self, name):
         self.textures.append(name)
 
@@ -16,6 +17,14 @@ class manifest:
 
     def delete_texture(self, name):
         self.textures.remove(name)
+
+# Images ----------------------------------------------------------------------
+    def get_new_image_name(self):
+        pattern = 'New Image #{}'
+        number = 1
+        while self.images.count(pattern.format(number)) > 0:
+            number = number + 1
+        return pattern.format(number)
 
     def add_image(self, name):
         self.images.append(name)
@@ -27,6 +36,7 @@ class manifest:
     def delete_image(self, name):
         self.images.remove(name)
 
+# -----------------------------------------------------------------------------
     def to_json(self):
         data = {
             'textures': self.textures,
