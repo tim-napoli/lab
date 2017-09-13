@@ -94,6 +94,9 @@ class images_manager:
             (image_name, self.load(image_name))
             for image_name in self.manifest.images
         ]
+
+    def save(self, image_name, image):
+        image.save(self.get_image_path(image_name))
 # -----------------------------------------------------------------------------
 
 class manager:

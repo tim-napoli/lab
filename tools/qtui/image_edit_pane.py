@@ -32,10 +32,11 @@ class texture_popup(QDialog):
         return self.clicked_texture
 
 class textures_list(QWidget):
-    def __init__(self, parent, manager, image):
+    def __init__(self, parent, manager, image_name, image):
         super().__init__(parent)
 
         self.manager = manager
+        self.image_name = image_name
         self.image = image
         self.build_list_view()
         self.build_button_bar()
@@ -79,15 +80,16 @@ class textures_list(QWidget):
             texture = dialog.get_result()
             self.add_texture_item(texture)
             self.image.add_texture(texture)
+            self.manager.images.save(self.image_name, self.image)
 
 class hot_point_editor(QWidget):
     pass
 
 class image_edit_pane(QWidget):
-    def __init__(self, parent, manager, image):
+    def __init__(self, parent, manager, image_name, image):
         super().__init__(parent)
 
-        list_view = textures_list(self, manager, image)
+        list_view = textures_list(self, manager, image_name, image)
 
         vbox = QVBoxLayout()
         vbox.addWidget(list_view)

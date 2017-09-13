@@ -44,7 +44,7 @@ class editor_pane(QWidget):
 
     def start_image_edit_pane(self, name):
         image = self.manager.images.load(name)
-        pane = image_edit_pane.image_edit_pane(self, self.manager, image)
+        pane = image_edit_pane.image_edit_pane(self, self.manager, name, image)
         self.emplace_edit_pane(pane)
 
     def on_navigation_pane_item_click(self, index):
