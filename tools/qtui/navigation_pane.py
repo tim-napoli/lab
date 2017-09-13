@@ -32,22 +32,23 @@ class navigation_pane(QTreeView):
     def build_model(self):
         self.model = item_model()
         self.model.setHorizontalHeaderLabels(['Data'])
-        self.add_texture_node()
+        self.add_textures_node()
+        self.add_images_node()
 
 # Textures management ---------------------------------------------------------
     def add_texture_item(self, name):
-        self.texture_item.appendRow(QStandardItem(name))
+        self.textures_item.appendRow(QStandardItem(name))
 
     def remove_texture_item(self, item):
         self.model.removeRows(item.row(), 1, self.textures_node)
 
-    def add_texture_node(self):
-        self.texture_item = QStandardItem("Textures")
-        self.texture_item.setEditable(False)
+    def add_textures_node(self):
+        self.textures_item = QStandardItem("Textures")
+        self.textures_item.setEditable(False)
         for texture in self.manager.manifest.textures:
             self.add_texture_item(texture)
-        self.model.appendRow(self.texture_item)
-        self.textures_node = self.model.indexFromItem(self.texture_item)
+        self.model.appendRow(self.textures_item)
+        self.textures_node = self.model.indexFromItem(self.textures_item)
 
     def import_texture(self):
         path, _ = QFileDialog.getOpenFileName(self)
@@ -77,6 +78,18 @@ class navigation_pane(QTreeView):
         menu = QMenu()
         menu.addAction("Remove", lambda: self.remove_texture(item))
         menu.exec_(self.mapToGlobal(point))
+
+# Images management -----------------------------------------------------------
+    def add_image_item(self, name):
+        self.images_item.appendRow(QStandardItem(name))
+
+    def add_images_node(self):
+        self.images_item = QStandardItem("Images")
+        self.images_item.setEditable(False)
+        for image in self.manager.manifest.images:
+            self.add_image_item(image)
+        self.model.appendRow(self.images_item)
+        self.images_node = self.model.indexFromItem(self.images_item)
 
 # -----------------------------------------------------------------------------
     def on_context_menu(self, point):
