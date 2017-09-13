@@ -17,6 +17,16 @@ class manifest:
     def delete_texture(self, name):
         self.textures.remove(name)
 
+    def add_image(self, name):
+        self.images.append(name)
+
+    def rename_image(self, previous_name, new_name):
+        self.images.remove(previous_name)
+        self.images.append(new_name)
+
+    def delete_image(self, name):
+        self.images.remove(name)
+
     def to_json(self):
         data = {
             'textures': self.textures,

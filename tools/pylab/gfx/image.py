@@ -1,17 +1,24 @@
 import json
+from pylab.math import point
 
 class image:
-    def __init__(self, img_path, hot_point):
-        self.img_path = img_path
+    def __init__(self, textures, hot_point):
+        self.textures = textures
         self.hot_point = hot_point
 
-    def to_json(self):
-        return "Not implemented yet."
+    def save(self, path):
+        with open(path, 'w+') as f:
+            content = json.dumps({
+                "textures": self.textures,
+                "hot_point": self.hot_point.to_json()
+            })
+            f.write(content)
 
-def load_json(text):
-    data = json.loads(text)
-    print(data)
-    path = data["path"]
-    hot_point = data["hot_point"]
-    return image(path, hot_point)
+def load_json(json_path):
+    with open(json_path, 'r') as f:
+        content = f.read()
+        data = json.loads(content)
+        textures = data["textures"]
+        hot_point = point.load_json(data["hot_point"])
+        return image(textures, hot_point)
 
