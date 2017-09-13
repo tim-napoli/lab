@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel
 from qtui import navigation_pane
 from qtui import texture_edit_pane
 from qtui import textures_edit_pane
+from qtui import image_edit_pane
 
 class editor_pane(QWidget):
     def __init__(self, parent, manager):
@@ -41,6 +42,11 @@ class editor_pane(QWidget):
         pane = textures_edit_pane.textures_edit_pane(self, textures)
         self.emplace_edit_pane(pane)
 
+    def start_image_edit_pane(self, name):
+        image = self.manager.images.load(name)
+        pane = image_edit_pane.image_edit_pane(self, image)
+        self.emplace_edit_pane(pane)
+
     def on_navigation_pane_item_click(self, index):
         item = self.navigation_pane.model.itemFromIndex(index)
         if index == self.navigation_pane.textures_node:
@@ -49,3 +55,6 @@ class editor_pane(QWidget):
             parent = self.navigation_pane.model.parent(index)
             if parent == self.navigation_pane.textures_node:
                 self.start_texture_edit_pane(item.text())
+            elif parent == self.navigation_pane.images_node:
+                self.start_image_edit_pane(item.text())
+
