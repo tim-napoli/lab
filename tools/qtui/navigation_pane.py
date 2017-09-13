@@ -121,4 +121,6 @@ class navigation_pane(QTreeView):
         parent = self.model.parent(index)
         if parent == self.textures_node:
             self.manager.textures.rename(previous_name, new_name)
+        elif parent == self.images_node:
+            self.manager.images.rename(previous_name, new_name)
 
