@@ -51,6 +51,9 @@ class textures_list(QWidget):
         item.setEditable(False)
         self.model.appendRow(item)
 
+    def remove_texture_item(self, item):
+        self.model.removeRows(item.row(), 1)
+
     def build_list_view(self):
         self.list_view = QListView(self)
         self.model = QStandardItemModel(self.list_view)
@@ -62,6 +65,7 @@ class textures_list(QWidget):
         add_button = QPushButton("Add", self)
         add_button.clicked.connect(self.add_texture)
         remove_button = QPushButton("Remove", self)
+        remove_button.clicked.connect(self.remove_texture)
         up_button = QPushButton("Move up", self)
         down_button = QPushButton("Move down", self)
 
@@ -80,6 +84,15 @@ class textures_list(QWidget):
             texture = dialog.get_result()
             self.add_texture_item(texture)
             self.image.add_texture(texture)
+            self.manager.images.save(self.image_name, self.image)
+
+    def remove_texture(self):
+        index = self.list_view.currentIndex()
+        item = self.model.itemFromIndex(index)
+        if item != None:
+            texture = item.text()
+            self.remove_texture_item(item)
+            self.image.remove_texture(texture)
             self.manager.images.save(self.image_name, self.image)
 
 class hot_point_editor(QWidget):

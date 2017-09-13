@@ -9,6 +9,9 @@ class image:
     def add_texture(self, texture):
         self.textures.append(texture)
 
+    def remove_texture(self, texture):
+        self.textures.remove(texture)
+
     def save(self, path):
         with open(path, 'w+') as f:
             content = json.dumps({
