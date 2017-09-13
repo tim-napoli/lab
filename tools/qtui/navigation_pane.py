@@ -85,6 +85,9 @@ class navigation_pane(QTreeView):
         self.images_item.appendRow(item)
         return item
 
+    def remove_image_item(self, item):
+        self.model.removeRows(item.row(), 1, self.images_node)
+
     def add_images_node(self):
         self.images_item = QStandardItem("Images")
         self.images_item.setEditable(False)
@@ -100,9 +103,28 @@ class navigation_pane(QTreeView):
         index = self.model.indexFromItem(item)
         self.setCurrentIndex(index)
 
+    def remove_image(self, item):
+        button = QMessageBox.warning(
+            self, "Image deletion",
+            "Are you sure you want to delete the image ?",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+        if button == QMessageBox.Yes:
+            name = item.text()
+            self.manager.images.delete(name)
+            self.remove_image_item(item)
+
     def show_images_menu(self, point):
         menu = QMenu()
         menu.addAction("Create", self.create_image)
+        menu.exec_(self.mapToGlobal(point))
+
+    def show_image_menu(self, point):
+        item_index = self.indexAt(point)
+        item = self.model.itemFromIndex(item_index)
+
+        menu = QMenu()
+        menu.addAction("Remove", lambda: self.remove_image(item))
         menu.exec_(self.mapToGlobal(point))
 
 # -----------------------------------------------------------------------------
@@ -116,6 +138,8 @@ class navigation_pane(QTreeView):
             parent = self.model.parent(item)
             if parent == self.textures_node:
                 self.show_texture_menu(point)
+            elif parent == self.images_node:
+                self.show_image_menu(point)
 
     def on_rename(self, index, previous_name, new_name):
         parent = self.model.parent(index)
