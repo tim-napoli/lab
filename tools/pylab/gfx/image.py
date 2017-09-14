@@ -34,6 +34,10 @@ class image:
             return True
         return False
 
+    def set_hot_point(self, x, y):
+        self.hot_point.x = x
+        self.hot_point.y = y
+
     def save(self, path):
         with open(path, 'w+') as f:
             content = json.dumps({
