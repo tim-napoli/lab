@@ -16,6 +16,13 @@ image::image(const std::vector<texture>& texs, glm::vec2 hot_point,
     do_points(dimensions);
 }
 
+image::image(const std::vector<texture>& texs, glm::vec2 hot_point)
+    : _textures(texs)
+    , _hot_point(hot_point)
+{
+    do_points(_textures[0].get_dimensions());
+}
+
 image::~image() {
 
 }

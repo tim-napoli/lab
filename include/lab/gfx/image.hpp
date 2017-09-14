@@ -43,6 +43,12 @@ class image {
     image(const std::vector<texture>& texs, glm::vec2 hot_point,
           glm::vec2 dimensions);
 
+    /**
+     * Same as previous constructor, but dimension is extracted from the
+     * original texture dimensions.
+     */
+    image(const std::vector<texture>& texs, glm::vec2 hot_point);
+
     ~image();
 
     /**
