@@ -37,6 +37,25 @@ class manifest:
         self.images.remove(name)
 
 # -----------------------------------------------------------------------------
+# Animation ----------------------------------------------------------------------
+    def get_new_animation_name(self):
+        pattern = 'New Animation #{}'
+        number = 1
+        while self.animations.count(pattern.format(number)) > 0:
+            number = number + 1
+        return pattern.format(number)
+
+    def add_animation(self, name):
+        self.animations.append(name)
+
+    def rename_animation(self, previous_name, new_name):
+        self.animations.remove(previous_name)
+        self.animations.append(new_name)
+
+    def delete_animation(self, name):
+        self.animations.remove(name)
+
+# -----------------------------------------------------------------------------
     def to_json(self):
         data = {
             'textures': self.textures,

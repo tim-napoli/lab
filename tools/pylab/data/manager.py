@@ -97,8 +97,53 @@ class images_manager:
 
     def save(self, image_name, image):
         image.save(self.get_image_path(image_name))
-# -----------------------------------------------------------------------------
+# animations_manager ----------------------------------------------------------
+class animations_manager:
+    ANIMATION_DIRECTORY = 'animations'
 
+    def __init__(self, data_path, manifest):
+        self.path = '{}/{}'.format(data_path, self.ANIMATION_DIRECTORY)
+        self.manifest = manifest
+
+    def get_animation_path(self, name):
+        return '{}/{}.labanim'.format(self.path, name)
+
+    def create(self, name):
+        anim = animation.animation([])
+        anim.save(self.get_animation_path(name))
+        self.manifest.add_animation(name)
+        self.manifest.save()
+        return name
+
+    def rename(self, previous_name, new_name):
+        os.rename(
+            self.get_animation_path(previous_name),
+            self.get_animation_path(new_name)
+        )
+        self.manifest.rename_animation(previous_name, new_name)
+        self.manifest.save()
+
+    def delete(self, name):
+        os.remove(self.get_animation_path(name))
+        self.manifest.delete_animation(name)
+        self.manifest.save()
+
+    def load(self, name):
+        """Returns the given animation."""
+        return animation.load_json(self.get_animation_path(name))
+
+    def load_all(self):
+        """Load every animations available in the data folder. Returns for
+        each a couple (name, animation).
+        """
+        return [
+            (anim_name, self.load(anim_name))
+            for anim_name in self.manifest.animations
+        ]
+
+    def save(self, anim_name, anim):
+        anim.save(self.get_animation_path(anim_name))
+# -----------------------------------------------------------------------------
 class manager:
     """The data manager is a class that will help to manage the
     project data directory.
