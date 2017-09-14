@@ -14,6 +14,8 @@ class item_model(QStandardItemModel):
             return super().setData(index, value, role)
 
 class navigation_pane(QTreeView):
+    image_rename = pyqtSignal(str)
+
     def __init__(self, parent, manager):
         super().__init__(parent)
 
@@ -147,4 +149,5 @@ class navigation_pane(QTreeView):
             self.manager.textures.rename(previous_name, new_name)
         elif parent == self.images_node:
             self.manager.images.rename(previous_name, new_name)
+            self.image_rename.emit(new_name)
 

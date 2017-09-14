@@ -13,6 +13,7 @@ class editor_pane(QWidget):
 
         self.navigation_pane = navigation_pane.navigation_pane(self, manager)
         self.navigation_pane.clicked.connect(self.on_navigation_pane_item_click)
+        self.navigation_pane.image_rename.connect(self.on_image_rename)
 
         self.edit_pane = QLabel("Data Editor pane", self)
 
@@ -57,4 +58,8 @@ class editor_pane(QWidget):
                 self.start_texture_edit_pane(item.text())
             elif parent == self.navigation_pane.images_node:
                 self.start_image_edit_pane(item.text())
+
+    def on_image_rename(self, new_name):
+        if type(self.edit_pane) == image_edit_pane.image_edit_pane:
+            self.start_image_edit_pane(new_name)
 
