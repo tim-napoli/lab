@@ -105,13 +105,13 @@ class textures_list(QWidget):
         self.button_bar.setLayout(hbox)
 
     def add_texture(self):
-        textures = self.manager.textures.load_all()
+        textures = self.manager["textures"].load_all()
         dialog = texture_popup(textures)
         if dialog.show() == QDialog.Accepted:
             texture = dialog.get_result()
             self.add_texture_item(texture)
             self.image.add_texture(texture)
-            self.manager.images.save(self.image_name, self.image)
+            self.manager["images"].save(self.image_name, self.image)
             self.textures_changed.emit()
 
     def remove_texture(self):
@@ -121,7 +121,7 @@ class textures_list(QWidget):
             texture = item.text()
             self.remove_texture_item(item)
             self.image.remove_texture(texture)
-            self.manager.images.save(self.image_name, self.image)
+            self.manager["images"].save(self.image_name, self.image)
             self.textures_changed.emit()
 
     def move_up_texture(self):
@@ -131,7 +131,7 @@ class textures_list(QWidget):
             self.move_up_texture_item(item)
             texture = item.text()
             self.image.move_up_texture(texture)
-            self.manager.images.save(self.image_name, self.image)
+            self.manager["images"].save(self.image_name, self.image)
             self.textures_changed.emit()
 
     def move_down_texture(self):
@@ -141,7 +141,7 @@ class textures_list(QWidget):
             self.move_down_texture_item(item)
             texture = item.text()
             self.image.move_down_texture(texture)
-            self.manager.images.save(self.image_name, self.image)
+            self.manager["images"].save(self.image_name, self.image)
             self.textures_changed.emit()
 
 # hot_point_editor ------------------------------------------------------------
@@ -188,7 +188,7 @@ class hot_point_editor(QGraphicsView):
         if self.pixmap != None:
             self.scene.removeItem(self.pixmap)
             self.pixmap = None
-        pixmap = QPixmap(self.manager.textures.load(self.image.textures[0]))
+        pixmap = QPixmap(self.manager["textures"].load(self.image.textures[0]))
         self.pixmap = self.scene.addPixmap(pixmap)
         self.pixmap.setZValue(0)
 
@@ -196,7 +196,7 @@ class hot_point_editor(QGraphicsView):
         self.hot_point.setPos(x, y)
         self.scene.update(self.scene.sceneRect())
         self.image.set_hot_point(x, y)
-        self.manager.images.save(self.image_name, self.image)
+        self.manager["images"].save(self.image_name, self.image)
 
 # -----------------------------------------------------------------------------
 class image_edit_pane(QWidget):

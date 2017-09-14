@@ -14,12 +14,14 @@ class item_model(QStandardItemModel):
             return super().setData(index, value, role)
 
 class navigation_pane(QTreeView):
-    image_rename = pyqtSignal(str)
+    data_rename = pyqtSignal(str, str)
 
     def __init__(self, parent, manager):
         super().__init__(parent)
 
         self.manager = manager
+        self.root_items = {}
+        self.root_indexes = {}
 
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.build_model()
@@ -34,120 +36,110 @@ class navigation_pane(QTreeView):
     def build_model(self):
         self.model = item_model()
         self.model.setHorizontalHeaderLabels(['Data'])
-        self.add_textures_node()
-        self.add_images_node()
+        for name, node in self.manager.manifest.nodes.items():
+            self.add_data_node(node)
 
-# Textures management ---------------------------------------------------------
-    def add_texture_item(self, name):
-        self.textures_item.appendRow(QStandardItem(name))
+# Node management -------------------------------------------------------------
+    def add_data_item(self, parent, name):
+        self.root_items[parent].appendRow(QStandardItem(name))
 
-    def remove_texture_item(self, item):
-        self.model.removeRows(item.row(), 1, self.textures_node)
+    def remove_data_item(self, parent, item):
+        self.model.removeRows(item.row(), 1, self.root_indexes[parent])
 
-    def add_textures_node(self):
-        self.textures_item = QStandardItem("Textures")
-        self.textures_item.setEditable(False)
-        for texture in self.manager.manifest.textures:
-            self.add_texture_item(texture)
-        self.model.appendRow(self.textures_item)
-        self.textures_node = self.model.indexFromItem(self.textures_item)
-
-    def import_texture(self):
-        path, _ = QFileDialog.getOpenFileName(self)
-        new_item = self.manager.textures.create(path)
-        self.add_texture_item(new_item)
-
-    def remove_texture(self, item):
-        button = QMessageBox.warning(
-            self, "Texture deletion",
-            "Are you sure you want to delete the texture ?",
-            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+    def add_data_node(self, manifest_node):
+        name = manifest_node.name
+        self.root_items[name] = QStandardItem(name)
+        self.root_items[name].setEditable(False)
+        for data in manifest_node.data_list:
+            self.add_data_item(name, data)
+        self.model.appendRow(self.root_items[name])
+        self.root_indexes[name] = self.model.indexFromItem(
+            self.root_items[name]
         )
-        if button == QMessageBox.Yes:
-            name = item.text()
-            self.manager.textures.delete(name)
-            self.remove_texture_item(item)
 
-    def show_textures_menu(self, point):
-        menu = QMenu()
-        menu.addAction("Import", self.import_texture)
-        menu.exec_(self.mapToGlobal(point))
-
-    def show_texture_menu(self, point):
-        item_index = self.indexAt(point)
-        item = self.model.itemFromIndex(item_index)
-
-        menu = QMenu()
-        menu.addAction("Remove", lambda: self.remove_texture(item))
-        menu.exec_(self.mapToGlobal(point))
-
-# Images management -----------------------------------------------------------
-    def add_image_item(self, name):
-        item = QStandardItem(name)
-        self.images_item.appendRow(item)
-        return item
-
-    def remove_image_item(self, item):
-        self.model.removeRows(item.row(), 1, self.images_node)
-
-    def add_images_node(self):
-        self.images_item = QStandardItem("Images")
-        self.images_item.setEditable(False)
-        for image in self.manager.manifest.images:
-            self.add_image_item(image)
-        self.model.appendRow(self.images_item)
-        self.images_node = self.model.indexFromItem(self.images_item)
-
-    def create_image(self):
-        name = self.manager.manifest.get_new_image_name()
-        self.manager.images.create(name)
-        item = self.add_image_item(name)
+    def create_data(self, parent):
+        name = self.manager.manifest.nodes[parent].get_new_data_name()
+        self.manager.managers[parent].create(name)
+        item = self.add_data_item(parent, name)
         index = self.model.indexFromItem(item)
         self.setCurrentIndex(index)
+        self.manager.manifest.save()
 
-    def remove_image(self, item):
+    def remove_data(self, parent, item):
         button = QMessageBox.warning(
-            self, "Image deletion",
-            "Are you sure you want to delete the image ?",
+            self, "{} deletion".format(parent),
+            "Are you sure you want to delete the data ?",
             QMessageBox.Yes | QMessageBox.No, QMessageBox.No
         )
         if button == QMessageBox.Yes:
             name = item.text()
-            self.manager.images.delete(name)
-            self.remove_image_item(item)
+            self.manager.managers[parent].delete(name)
+            self.remove_data_item(parent, item)
+            self.manager.manifest.save()
 
-    def show_images_menu(self, point):
-        menu = QMenu()
-        menu.addAction("Create", self.create_image)
-        menu.exec_(self.mapToGlobal(point))
-
-    def show_image_menu(self, point):
+    def show_data_list_menu(self, point):
         item_index = self.indexAt(point)
         item = self.model.itemFromIndex(item_index)
 
         menu = QMenu()
-        menu.addAction("Remove", lambda: self.remove_image(item))
+        menu.addAction("Create", lambda: self.create_data(item.text()))
+        menu.exec_(self.mapToGlobal(point))
+
+    def show_data_menu(self, point):
+        item_index = self.indexAt(point)
+        parent_index = self.model.parent(item_index)
+        item = self.model.itemFromIndex(item_index)
+        parent = self.model.itemFromIndex(parent_index)
+
+        menu = QMenu()
+        menu.addAction("Remove", lambda: self.remove_data(parent.text(), item))
+        menu.exec_(self.mapToGlobal(point))
+
+# textures --------------------------------------------------------------------
+    def create_texture(self):
+        name = QFileDialog.getOpenFileName(self, "Choose a texture file")[0]
+        name = self.manager.managers["textures"].create(name)
+        item = self.add_data_item("textures", name)
+        index = self.model.indexFromItem(item)
+        self.setCurrentIndex(index)
+        self.manager.manifest.save()
+
+    def show_texture_popup(self, point):
+        menu = QMenu()
+        menu.addAction("Import", self.create_texture)
         menu.exec_(self.mapToGlobal(point))
 
 # -----------------------------------------------------------------------------
+    def is_item_index_a_root(self, index):
+        for _, root_index in self.root_indexes.items():
+            if index == root_index:
+                return True
+        return False
+
+    def get_item_name(self, index):
+        item = self.model.itemFromIndex(index)
+        return item.text()
+
+    def get_parent_name(self, index):
+        parent_index = self.model.parent(index)
+        parent = self.model.itemFromIndex(parent_index)
+        return parent.text()
+
     def on_context_menu(self, point):
-        item = self.indexAt(point)
-        if item == self.textures_node:
-            self.show_textures_menu(point)
-        elif item == self.images_node:
-            self.show_images_menu(point)
+        item_index = self.indexAt(point)
+        if self.is_item_index_a_root(item_index):
+            item = self.model.itemFromIndex(item_index)
+            if item.text() == "textures":
+                self.show_texture_popup(point)
+            else:
+                self.show_data_list_menu(point)
         else:
-            parent = self.model.parent(item)
-            if parent == self.textures_node:
-                self.show_texture_menu(point)
-            elif parent == self.images_node:
-                self.show_image_menu(point)
+            self.show_data_menu(point)
 
     def on_rename(self, index, previous_name, new_name):
-        parent = self.model.parent(index)
-        if parent == self.textures_node:
-            self.manager.textures.rename(previous_name, new_name)
-        elif parent == self.images_node:
-            self.manager.images.rename(previous_name, new_name)
-            self.image_rename.emit(new_name)
+        parent_index = self.model.parent(index)
+        parent = self.model.itemFromIndex(parent_index).text()
+        self.manager.managers[parent].rename(previous_name, new_name)
+        self.manager.manifest.save()
+        self.data_rename.emit(parent, new_name)
 

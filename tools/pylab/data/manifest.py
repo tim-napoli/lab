@@ -1,68 +1,52 @@
 import json
 
-class manifest:
-    def __init__(self, path, textures, images, animations):
-        self.path = path
-        self.textures = textures
-        self.images = images
-        self.animations = animations
+class manifest_node:
+    """A manifest_node is a part of the manifest data structure. We can see
+    it as an inventory of a "sub-folder" of the lab data path.
+    """
+    def __init__(self, name, data_list):
+        self.name = name
+        self.data_list = data_list
 
-# Textures --------------------------------------------------------------------
-    def add_texture(self, name):
-        self.textures.append(name)
-
-    def rename_texture(self, previous_name, new_name):
-        self.textures.remove(previous_name)
-        self.textures.append(new_name)
-
-    def delete_texture(self, name):
-        self.textures.remove(name)
-
-# Images ----------------------------------------------------------------------
-    def get_new_image_name(self):
-        pattern = 'New Image #{}'
+    def get_new_data_name(self):
+        pattern = 'New {} #{}'
         number = 1
-        while self.images.count(pattern.format(number)) > 0:
+        while self.data_list.count(pattern.format(self.name, number)) > 0:
             number = number + 1
-        return pattern.format(number)
+        return pattern.format(self.name, number)
 
-    def add_image(self, name):
-        self.images.append(name)
+    def add(self, name):
+        if self.data_list.count(name) > 0:
+            raise ValueError(
+                "Manifest node '{}' has already data '{}'".format(
+                    self.name, name
+                )
+            )
+        self.data_list.append(name)
 
-    def rename_image(self, previous_name, new_name):
-        self.images.remove(previous_name)
-        self.images.append(new_name)
+    def rename(self, previous_name, new_name):
+        self.data_list.remove(previous_name)
+        self.data_list.append(new_name)
 
-    def delete_image(self, name):
-        self.images.remove(name)
+    def delete(self, name):
+        self.data_list.remove(name)
 
-# -----------------------------------------------------------------------------
-# Animation ----------------------------------------------------------------------
-    def get_new_animation_name(self):
-        pattern = 'New Animation #{}'
-        number = 1
-        while self.animations.count(pattern.format(number)) > 0:
-            number = number + 1
-        return pattern.format(number)
-
-    def add_animation(self, name):
-        self.animations.append(name)
-
-    def rename_animation(self, previous_name, new_name):
-        self.animations.remove(previous_name)
-        self.animations.append(new_name)
-
-    def delete_animation(self, name):
-        self.animations.remove(name)
-
-# -----------------------------------------------------------------------------
     def to_json(self):
-        data = {
-            'textures': self.textures,
-            'images': self.images,
-            'animations': self.animations
-        }
-        return json.dumps(data)
+        return self.data_list
+
+class manifest:
+    def __init__(self, path, nodes):
+        self.path = path
+        self.nodes = nodes
+
+    def get_node(self, name):
+        return self.nodes[name]
+
+    def to_json(self):
+        nodes = {}
+        for name, node in self.nodes.items():
+            nodes[name] = node.to_json()
+        return json.dumps(nodes)
 
     def save(self):
         with open(self.path, 'w+') as f:
@@ -73,9 +57,10 @@ def load_json(json_file_path):
     with open(json_file_path, 'r') as f:
         json_text = f.read()
         json_data = json.loads(json_text)
-        return manifest(
-            json_file_path,
-            json_data["textures"],
-            json_data["images"],
-            json_data["animations"]
-        )
+
+        nodes = {}
+        for k, v in json_data.items():
+            nodes[k] = manifest_node(k, v)
+
+        return manifest(json_file_path, nodes)
+

@@ -5,15 +5,49 @@ import shutil
 from pylab.data import manifest
 from pylab.gfx import texture
 from pylab.gfx import image
+from pylab.gfx import animation
 from pylab.math import point
 
-# textures_manager ------------------------------------------------------------
-class textures_manager:
-    TEXTURE_DIRECTORY = 'textures'
+# sub_manager -----------------------------------------------------------------
+class sub_manager:
+    def __init__(self, path, manifest_node, template_object, load_func):
+        self.path = path
+        self.manifest_node = manifest_node
+        self.template_object = template_object
+        self.load_func = load_func
 
-    def __init__(self, data_path, manifest):
-        self.path = '{}/{}'.format(data_path, self.TEXTURE_DIRECTORY)
-        self.manifest = manifest
+    def create(self, name):
+        self.manifest_node.add(name)
+        self.template_object.save('{}/{}'.format(self.path, name))
+        return name
+
+    def rename(self, previous_name, new_name):
+        os.rename(
+            '{}/{}'.format(self.path, previous_name),
+            '{}/{}'.format(self.path, new_name)
+        )
+        self.manifest_node.rename(previous_name, new_name)
+
+    def delete(self, name):
+        os.remove('{}/{}'.format(self.path, name))
+        self.manifest_node.delete(name)
+
+    def load(self, name):
+        return self.load_func('{}/{}'.format(self.path, name))
+
+    def load_all(self):
+        return [
+            self.load(data)
+            for data in self.manifest_node.data_list
+        ]
+
+    def save(self, name, data):
+        data.save('{}/{}'.format(self.path, name))
+
+# textures_manager ------------------------------------------------------------
+class textures_manager(sub_manager):
+    def __init__(self, path, manifest_node):
+        super().__init__(path, manifest_node, None, None)
 
     def create(self, texture_path):
         texture_basename = os.path.basename(texture_path)
@@ -21,129 +55,20 @@ class textures_manager:
             texture_path,
             '{}/{}'.format(self.path, texture_basename)
         )
-        self.manifest.add_texture(texture_basename)
-        self.manifest.save()
+        self.manifest_node.add(texture_basename)
         return texture_basename
-
-    def rename(self, previous_name, new_name):
-        os.rename(
-            '{}/{}'.format(self.path, previous_name),
-            '{}/{}'.format(self.path, new_name)
-        )
-        self.manifest.rename_texture(previous_name, new_name)
-        self.manifest.save()
-
-    def delete(self, name):
-        self.manifest.delete_texture(name)
-        os.remove('{}/{}'.format(self.path, name))
-        self.manifest.save()
 
     def load(self, name):
         """Returns the absolute path of the given texture."""
         return '{}/{}'.format(self.path, name)
 
     def load_all(self):
-        """Load every textures available in the data folder. Returns for
-        each texture a couple (name, image).
-        """
         return [
             (texture, self.load(texture))
-            for texture in self.manifest.textures
+            for texture in self.manifest_node.data_list
         ]
 
-# images_manager --------------------------------------------------------------
-class images_manager:
-    IMAGE_DIRECTORY = 'images'
-
-    def __init__(self, data_path, manifest):
-        self.path = '{}/{}'.format(data_path, self.IMAGE_DIRECTORY)
-        self.manifest = manifest
-
-    def get_image_path(self, name):
-        return '{}/{}.labimage'.format(self.path, name)
-
-    def create(self, name):
-        img = image.image([], point.point(0, 0))
-        img.save(self.get_image_path(name))
-        self.manifest.add_image(name)
-        self.manifest.save()
-        return name
-
-    def rename(self, previous_name, new_name):
-        os.rename(
-            self.get_image_path(previous_name),
-            self.get_image_path(new_name)
-        )
-        self.manifest.rename_image(previous_name, new_name)
-        self.manifest.save()
-
-    def delete(self, name):
-        os.remove(self.get_image_path(name))
-        self.manifest.delete_image(name)
-        self.manifest.save()
-
-    def load(self, name):
-        """Returns the absolute path of the given image."""
-        return image.load_json(self.get_image_path(name))
-
-    def load_all(self):
-        """Load every textures available in the data folder. Returns for
-        each texture a couple (name, image).
-        """
-        return [
-            (image_name, self.load(image_name))
-            for image_name in self.manifest.images
-        ]
-
-    def save(self, image_name, image):
-        image.save(self.get_image_path(image_name))
-# animations_manager ----------------------------------------------------------
-class animations_manager:
-    ANIMATION_DIRECTORY = 'animations'
-
-    def __init__(self, data_path, manifest):
-        self.path = '{}/{}'.format(data_path, self.ANIMATION_DIRECTORY)
-        self.manifest = manifest
-
-    def get_animation_path(self, name):
-        return '{}/{}.labanim'.format(self.path, name)
-
-    def create(self, name):
-        anim = animation.animation([])
-        anim.save(self.get_animation_path(name))
-        self.manifest.add_animation(name)
-        self.manifest.save()
-        return name
-
-    def rename(self, previous_name, new_name):
-        os.rename(
-            self.get_animation_path(previous_name),
-            self.get_animation_path(new_name)
-        )
-        self.manifest.rename_animation(previous_name, new_name)
-        self.manifest.save()
-
-    def delete(self, name):
-        os.remove(self.get_animation_path(name))
-        self.manifest.delete_animation(name)
-        self.manifest.save()
-
-    def load(self, name):
-        """Returns the given animation."""
-        return animation.load_json(self.get_animation_path(name))
-
-    def load_all(self):
-        """Load every animations available in the data folder. Returns for
-        each a couple (name, animation).
-        """
-        return [
-            (anim_name, self.load(anim_name))
-            for anim_name in self.manifest.animations
-        ]
-
-    def save(self, anim_name, anim):
-        anim.save(self.get_animation_path(anim_name))
-# -----------------------------------------------------------------------------
+# manager ---------------------------------------------------------------------
 class manager:
     """The data manager is a class that will help to manage the
     project data directory.
@@ -151,9 +76,25 @@ class manager:
     def __init__(self, path, manifest):
         self.path = path
         self.manifest = manifest
-        self.textures = textures_manager(path, manifest)
-        self.images = images_manager(path, manifest)
 
+        self.managers = {
+            "textures": textures_manager(
+                path + "/textures", manifest.get_node("textures")
+            ),
+            "images": sub_manager(
+                path + "/images", manifest.get_node("images"),
+                image.image([], point.point(0, 0)), image.load_json
+            ),
+            "animations": sub_manager(
+                path + "/animations", manifest.get_node("animations"),
+                animation.animation([]), animation.load_json
+            )
+        }
+
+    def __getitem__(self, key):
+        return self.managers[key]
+
+# -----------------------------------------------------------------------------
 def create(path):
     """Creates every data folder and initialize an empty manifest
     file.
@@ -174,7 +115,12 @@ def create(path):
     os.mkdir(images_path)
     os.mkdir(animations_path)
 
-    manif = manifest.manifest(manifest_path, [], [], [])
+    nodes = {
+        "textures": manifest.manifest_node("textures", []),
+        "images": manifest.manifest_node("images", []),
+        "animations": manifest.manifest_node("animations", [])
+    }
+    manif = manifest.manifest(manifest_path, nodes)
     manif.save()
     return manager(path, manif)
 

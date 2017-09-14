@@ -13,7 +13,7 @@ class editor_pane(QWidget):
 
         self.navigation_pane = navigation_pane.navigation_pane(self, manager)
         self.navigation_pane.clicked.connect(self.on_navigation_pane_item_click)
-        self.navigation_pane.image_rename.connect(self.on_image_rename)
+        self.navigation_pane.data_rename.connect(self.on_data_rename)
 
         self.edit_pane = QLabel("Data Editor pane", self)
 
@@ -34,32 +34,35 @@ class editor_pane(QWidget):
         self.edit_pane = pane
 
     def start_texture_edit_pane(self, texture):
-        texture_path = self.manager.textures.load(texture)
+        texture_path = self.manager["textures"].load(texture)
         pane = texture_edit_pane.texture_edit_pane(self, texture_path)
         self.emplace_edit_pane(pane)
 
     def start_textures_edit_pane(self):
-        textures = self.manager.textures.load_all()
+        textures = self.manager["textures"].load_all()
         pane = textures_edit_pane.textures_edit_pane(self, textures)
         self.emplace_edit_pane(pane)
 
     def start_image_edit_pane(self, name):
-        image = self.manager.images.load(name)
+        image = self.manager["images"].load(name)
         pane = image_edit_pane.image_edit_pane(self, self.manager, name, image)
         self.emplace_edit_pane(pane)
 
     def on_navigation_pane_item_click(self, index):
-        item = self.navigation_pane.model.itemFromIndex(index)
-        if index == self.navigation_pane.textures_node:
+        item_name = self.navigation_pane.get_item_name(index)
+        if item_name == "textures":
             self.start_textures_edit_pane()
+        elif item_name == "images":
+            return
         else:
-            parent = self.navigation_pane.model.parent(index)
-            if parent == self.navigation_pane.textures_node:
-                self.start_texture_edit_pane(item.text())
-            elif parent == self.navigation_pane.images_node:
-                self.start_image_edit_pane(item.text())
+            data_name = self.navigation_pane.get_item_name(index)
+            parent = self.navigation_pane.get_parent_name(index)
+            if parent == "textures":
+                self.start_texture_edit_pane(data_name)
+            elif parent == "images":
+                self.start_image_edit_pane(data_name)
 
-    def on_image_rename(self, new_name):
+    def on_data_rename(self, parent, new_name):
         if type(self.edit_pane) == image_edit_pane.image_edit_pane:
             self.start_image_edit_pane(new_name)
 
