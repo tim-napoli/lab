@@ -29,6 +29,7 @@
 #include "lab/gfx/texture.hpp"
 #include "lab/gfx/light.hpp"
 #include "lab/gfx/image.hpp"
+#include "lab/gfx/animation.hpp"
 
 namespace lab {
 
