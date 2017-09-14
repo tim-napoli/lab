@@ -10,6 +10,7 @@ from PyQt5.QtCore import QRectF, Qt, QEvent, pyqtSignal
 from qtui import textures_edit_pane
 from qtui.textures_edit_pane import texture_miniature
 from qtui.miniature_selection_popup import miniature_selection_popup
+from qtui.data_list import data_list
 
 # textures_list ---------------------------------------------------------------
 class texture_popup(miniature_selection_popup):
@@ -18,111 +19,39 @@ class texture_popup(miniature_selection_popup):
         for texture in textures:
             self.add_miniature(texture_miniature(self, *texture))
 
-class textures_list(QWidget):
-    textures_changed = pyqtSignal()
-
+class textures_list(data_list):
     def __init__(self, parent, manager, image_name, image):
-        super().__init__(parent)
-
+        super().__init__(parent, image.textures)
         self.manager = manager
         self.image_name = image_name
         self.image = image
-        self.build_list_view()
-        self.build_button_bar()
 
-        vbox = QVBoxLayout()
-        vbox.addWidget(self.list_view)
-        vbox.addWidget(self.button_bar)
-        self.setLayout(vbox)
-
-    def add_texture_item(self, texture):
-        item = QStandardItem(texture)
-        item.setEditable(False)
-        self.model.appendRow(item)
-
-    def remove_texture_item(self, item):
-        self.model.removeRows(item.row(), 1)
-
-    def move_up_texture_item(self, item):
-        row = item.row()
-        if row > 0:
-            self.model.takeRow(row)
-            self.model.insertRow(row - 1, item)
-            index = self.model.indexFromItem(item)
-            self.list_view.setCurrentIndex(index)
-
-    def move_down_texture_item(self, item):
-        row = item.row()
-        if row < self.model.rowCount() - 1:
-            self.model.takeRow(row)
-            self.model.insertRow(row + 1, item)
-            index = self.model.indexFromItem(item)
-            self.list_view.setCurrentIndex(index)
-
-    def build_list_view(self):
-        self.list_view = QListView(self)
-        self.model = QStandardItemModel(self.list_view)
-        for texture in self.image.textures:
-            self.add_texture_item(texture)
-        self.list_view.setModel(self.model)
-
-    def build_button_bar(self):
-        add_button = QPushButton("Add", self)
-        add_button.clicked.connect(self.add_texture)
-        remove_button = QPushButton("Remove", self)
-        remove_button.clicked.connect(self.remove_texture)
-        up_button = QPushButton("Move up", self)
-        up_button.clicked.connect(self.move_up_texture)
-        down_button = QPushButton("Move down", self)
-        down_button.clicked.connect(self.move_down_texture)
-
-        self.button_bar = QWidget(self)
-        hbox = QHBoxLayout()
-        hbox.addWidget(add_button)
-        hbox.addWidget(remove_button)
-        hbox.addWidget(up_button)
-        hbox.addWidget(down_button)
-        self.button_bar.setLayout(hbox)
-
-    def add_texture(self):
+    def add_data(self):
         textures = self.manager["textures"].load_all()
         dialog = texture_popup(textures)
         if dialog.show() == QDialog.Accepted:
             texture = dialog.get_result().texture
-            self.add_texture_item(texture)
             self.image.add_texture(texture)
             self.manager["images"].save(self.image_name, self.image)
-            self.textures_changed.emit()
+            return texture
 
-    def remove_texture(self):
-        index = self.list_view.currentIndex()
-        item = self.model.itemFromIndex(index)
-        if item != None:
-            texture = item.text()
-            self.remove_texture_item(item)
-            self.image.remove_texture(texture)
-            self.manager["images"].save(self.image_name, self.image)
-            self.textures_changed.emit()
+    def remove_data(self):
+        texture = self.get_selected_data()
+        self.image.remove_texture(texture)
+        self.manager["images"].save(self.image_name, self.image)
+        return True
 
-    def move_up_texture(self):
-        index = self.list_view.currentIndex()
-        item = self.model.itemFromIndex(index)
-        if item != None:
-            self.move_up_texture_item(item)
-            texture = item.text()
-            self.image.move_up_texture(texture)
-            self.manager["images"].save(self.image_name, self.image)
-            self.textures_changed.emit()
+    def move_up_data(self):
+        texture = self.get_selected_data()
+        self.image.move_up_texture(texture)
+        self.manager["images"].save(self.image_name, self.image)
+        return True
 
-    def move_down_texture(self):
-        index = self.list_view.currentIndex()
-        item = self.model.itemFromIndex(index)
-        if item != None:
-            self.move_down_texture_item(item)
-            texture = item.text()
-            self.image.move_down_texture(texture)
-            self.manager["images"].save(self.image_name, self.image)
-            self.textures_changed.emit()
+    def move_down_data(self):
+        texture = self.get_selected_data()
+        self.image.move_down_texture(texture)
+        self.manager["images"].save(self.image_name, self.image)
+        return True
 
 # hot_point_editor ------------------------------------------------------------
 class hot_point_scene(QGraphicsScene):
@@ -186,7 +115,7 @@ class image_edit_pane(QWidget):
         list_view = textures_list(self, manager, image_name, image)
         editor = hot_point_editor(self, manager, image_name, image)
 
-        list_view.textures_changed.connect(editor.draw_pixmap)
+        list_view.data_changed.connect(editor.draw_pixmap)
 
         vbox = QVBoxLayout()
         vbox.addWidget(list_view)
