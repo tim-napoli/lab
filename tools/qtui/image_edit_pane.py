@@ -8,35 +8,15 @@ from PyQt5.QtGui import (
 from PyQt5.QtCore import QRectF, Qt, QEvent, pyqtSignal
 
 from qtui import textures_edit_pane
+from qtui.textures_edit_pane import texture_miniature
+from qtui.miniature_selection_popup import miniature_selection_popup
 
 # textures_list ---------------------------------------------------------------
-class texture_popup(QDialog):
+class texture_popup(miniature_selection_popup):
     def __init__(self, textures):
-        super().__init__()
-        self.setWindowTitle("Image's texture selection")
-        self.clicked_texture = None
-
-        textures_grid = textures_edit_pane.textures_edit_pane(
-            self, textures, self.on_click
-        )
-
-        select_button = QPushButton("Cancel", self)
-        select_button.clicked.connect(self.reject)
-
-        vbox = QVBoxLayout()
-        vbox.addWidget(textures_grid)
-        vbox.addWidget(select_button)
-        self.setLayout(vbox)
-
-    def show(self):
-        return self.exec_()
-
-    def on_click(self, miniature):
-        self.clicked_texture = miniature.texture
-        self.accept()
-
-    def get_result(self):
-        return self.clicked_texture
+        super().__init__("Texture selection", [], 5)
+        for texture in textures:
+            self.add_miniature(texture_miniature(self, *texture))
 
 class textures_list(QWidget):
     textures_changed = pyqtSignal()
@@ -108,7 +88,7 @@ class textures_list(QWidget):
         textures = self.manager["textures"].load_all()
         dialog = texture_popup(textures)
         if dialog.show() == QDialog.Accepted:
-            texture = dialog.get_result()
+            texture = dialog.get_result().texture
             self.add_texture_item(texture)
             self.image.add_texture(texture)
             self.manager["images"].save(self.image_name, self.image)
