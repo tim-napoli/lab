@@ -9,6 +9,7 @@
 #define _lab_gfx_texture_hpp_
 
 #include <GL/gl.h>
+#include <glm/glm.hpp>
 #include "lab/util/exception.hpp"
 
 namespace lab { namespace gfx {
@@ -33,6 +34,8 @@ class texture {
     ~texture();
 
     GLuint get_texture_id() const {return _texture_id;}
+
+    glm::vec2 get_dimensions() const;
 
     /**
      * Destroy the texture from the video memory.
