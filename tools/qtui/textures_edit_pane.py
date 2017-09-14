@@ -3,10 +3,9 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, QEvent, pyqtSignal
 
 from qtui import pixmap_label
+from qtui.miniatures_grid import miniature, miniatures_grid
 
-class texture_miniature(QWidget):
-    clicked = pyqtSignal(object)
-
+class texture_miniature(miniature):
     def __init__(self, parent, texture_name, texture_path):
         super().__init__(parent)
 
@@ -21,31 +20,9 @@ class texture_miniature(QWidget):
         layout.addWidget(self.label)
         self.setLayout(layout)
 
-    def event(self, evt):
-        if evt.type() == QEvent.MouseButtonPress:
-            self.clicked.emit(self)
-        return super().event(evt)
-
-class textures_edit_pane(QWidget):
+class textures_edit_pane(miniatures_grid):
     def __init__(self, parent, textures, on_miniature_click_cb = None):
-        super().__init__(parent)
-
-        self.miniatures = [
-            texture_miniature(self, *texture)
-            for texture in textures
-        ]
-
-        grid = QGridLayout()
-        current_column = 0
-        current_row = 0
-        for miniature in self.miniatures:
-            if on_miniature_click_cb != None:
-                miniature.clicked.connect(on_miniature_click_cb)
-            grid.addWidget(miniature, current_row, current_column)
-            current_column = current_column + 1
-            if current_column == 5:
-                current_column = 0
-                current_row = current_row + 1
-
-        self.setLayout(grid)
+        super().__init__(parent, [], 5, on_miniature_click_cb)
+        for texture in textures:
+            self.add_miniature(texture_miniature(self, *texture))
 
