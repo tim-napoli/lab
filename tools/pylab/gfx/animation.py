@@ -5,6 +5,14 @@ class animation_frame:
         self.image = image
         self.tick_duration = tick_duration
 
+    def set_duration(self, duration):
+        if not isinstance(duration, int):
+            raise ValueError("duration must be an integer.")
+        self.tick_duration = duration
+
+    def get_duration(self):
+        return self.tick_duration
+
     def to_json(self):
         return {
             "image": self.image,
@@ -14,6 +22,29 @@ class animation_frame:
 class animation:
     def __init__(self, frames):
         self.frames = frames
+
+    def get_frame(self, index):
+        return self.frames[index]
+
+    def add_frame(self, frame):
+        self.frames.append(frame)
+
+    def remove_frame(self, index):
+        del(self.frames[index])
+
+    def move_up_frame(self, index):
+        if index == 0:
+            return
+        frame = self.frames[index]
+        del(self.frames[index])
+        self.frames.insert(index - 1, frame)
+
+    def move_down_frame(self, index):
+        if index >= len(self.frames) - 1:
+            return
+        frame = self.frames[index]
+        del(self.frames[index])
+        self.frames.insert(index + 1, frame)
 
     def to_json(self):
         return {

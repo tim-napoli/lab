@@ -4,6 +4,7 @@ from qtui import navigation_pane
 from qtui import texture_edit_pane
 from qtui import textures_edit_pane
 from qtui import image_edit_pane
+from qtui import animation_edit_pane
 
 class editor_pane(QWidget):
     def __init__(self, parent, manager):
@@ -48,6 +49,13 @@ class editor_pane(QWidget):
         pane = image_edit_pane.image_edit_pane(self, self.manager, name, image)
         self.emplace_edit_pane(pane)
 
+    def start_animation_edit_pane(self, name):
+        animation = self.manager["animations"].load(name)
+        pane = animation_edit_pane.animation_edit_pane(
+            self, self.manager, name, animation
+        )
+        self.emplace_edit_pane(pane)
+
     def on_navigation_pane_item_click(self, index):
         item_name = self.navigation_pane.get_item_name(index)
         if item_name == "textures":
@@ -61,6 +69,8 @@ class editor_pane(QWidget):
                 self.start_texture_edit_pane(data_name)
             elif parent == "images":
                 self.start_image_edit_pane(data_name)
+            elif parent == "animations":
+                self.start_animation_edit_pane(data_name)
 
     def on_data_rename(self, parent, new_name):
         if type(self.edit_pane) == image_edit_pane.image_edit_pane:
