@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QVBoxLayout, QTableView, QHBoxLayout, QPushButton,
-    QDialog, QErrorMessage
+    QDialog, QErrorMessage, QGraphicsView, QGraphicsScene
 )
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QPixmap
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal, QTimer
 
 from qtui.pixmap_label import pixmap_label
 from qtui.miniatures_grid import miniature
@@ -38,6 +38,8 @@ class image_selection_popup(miniature_selection_popup):
 
 # frames_table ----------------------------------------------------------------
 class frames_table(QWidget):
+    animation_changed = pyqtSignal(object)
+
     def __init__(self, parent, manager, animation_name, animation):
         super().__init__(parent)
 
@@ -117,6 +119,7 @@ class frames_table(QWidget):
         try:
             self.animation.get_frame(row).set_duration(tick_duration)
             self.save_animation()
+            self.animation_changed.emit(self.animation)
         except ValueError as ex:
             self.show_error_popup(str(ex))
 
@@ -129,6 +132,7 @@ class frames_table(QWidget):
             self.animation.add_frame(frame)
             self.save_animation()
             self.add_data_item(frame)
+            self.animation_changed.emit(self.animation)
 
     def remove_data(self):
         item = self.get_selected_item()
@@ -136,6 +140,7 @@ class frames_table(QWidget):
             self.animation.remove_frame(item.row())
             self.save_animation()
             self.remove_data_item(item)
+            self.animation_changed.emit(self.animation)
 
     def move_up_data(self):
         item = self.get_selected_item()
@@ -143,6 +148,7 @@ class frames_table(QWidget):
             self.animation.move_up_frame(item.row())
             self.save_animation()
             self.move_up_data_item(item)
+            self.animation_changed.emit(self.animation)
 
     def move_down_data(self):
         item = self.get_selected_item()
@@ -150,6 +156,7 @@ class frames_table(QWidget):
             self.animation.move_down_frame(item.row())
             self.save_animation()
             self.move_down_data_item(item)
+            self.animation_changed.emit(self.animation)
 
     def get_selected_item(self):
         index = self.table_view.currentIndex()
@@ -164,12 +171,128 @@ class frames_table(QWidget):
         error_dialog.showMessage(message)
         error_dialog.exec_()
 
+    def set_selection_to(self, frame):
+        item = self.model.item(frame)
+        index = self.model.indexFromItem(item)
+        self.table_view.setCurrentIndex(index)
+
+# animation_player ------------------------------------------------------------
+class player_frame:
+    def __init__(self, manager, frame):
+        image = manager["images"].load(frame.image)
+        if len(image.textures) == 0:
+            self.pixmap = QPixmap()
+        else:
+            texture = manager["textures"].load(image.textures[0])
+            self.pixmap = QPixmap(texture)
+        self.hot_point = image.hot_point
+        self.duration = frame.get_duration()
+
+class player_view(QGraphicsView):
+    frame_changed = pyqtSignal(int)
+
+    def __init__(self, parent, manager, animation):
+        super().__init__(parent)
+        self.manager = manager
+        self.animation = animation
+        self.current_frame = 0
+        self.timer = None
+
+        self.frames = [
+            player_frame(manager, frame)
+            for frame in animation.frames
+        ]
+        self.scene = QGraphicsScene(self)
+        self.setScene(self.scene)
+
+        if len(self.frames) > 0:
+            self.pixmap = self.scene.addPixmap(self.frames[0].pixmap)
+        else:
+            self.pixmap = self.scene.addPixmap(QPixmap())
+
+    def update_animation(self, animation):
+        self.animation = animation
+        self.frames = [
+            player_frame(self.manager, frame)
+            for frame in animation.frames
+        ]
+        self.current_frame = 0
+
+    def draw_current_frame(self):
+        self.pixmap.setPixmap(self.frames[self.current_frame].pixmap)
+        x_off = -self.frames[self.current_frame].hot_point.x
+        y_off = -self.frames[self.current_frame].hot_point.y
+        self.pixmap.setOffset(x_off, y_off)
+
+    def play(self):
+        self.current_frame = (self.current_frame + 1) % len(self.frames)
+        self.draw_current_frame()
+        self.frame_changed.emit(self.current_frame)
+        self.timer.stop()
+        self.timer.start(
+            (1000.0 / 60) * self.frames[self.current_frame].duration
+        )
+
+    def start(self):
+        if len(self.frames) > 0:
+            self.timer = QTimer()
+            self.timer.timeout.connect(self.play)
+            self.timer.start(
+                (1000.0 / 60) * self.frames[self.current_frame].duration
+            )
+
+    def pause(self):
+        if self.timer != None:
+            self.timer.stop()
+
+class player_control_bar(QWidget):
+    play = pyqtSignal()
+    pause = pyqtSignal()
+
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        play_button = QPushButton("Play", self)
+        play_button.clicked.connect(self.play.emit)
+        pause_button = QPushButton("Pause", self)
+        pause_button.clicked.connect(self.pause.emit)
+
+        hbox = QHBoxLayout()
+        hbox.addWidget(play_button)
+        hbox.addWidget(pause_button)
+        self.setLayout(hbox)
+
+class animation_player(QWidget):
+    def __init__(self, parent, manager, animation):
+        super().__init__(parent)
+
+        self.manager = manager
+        self.animation = animation
+
+        self.player = player_view(self, manager, animation)
+        controls = player_control_bar(self)
+        controls.play.connect(self.player.start)
+        controls.pause.connect(self.player.pause)
+        # XXX Why controls is None here ????
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.player)
+        vbox.addWidget(controls)
+        self.setLayout(vbox)
+
+
 # -----------------------------------------------------------------------------
 class animation_edit_pane(QWidget):
     def __init__(self, parent, manager, animation_name, animation):
         super().__init__(parent)
 
+        table = frames_table(self, manager, animation_name, animation)
+        player = animation_player(self, manager, animation)
+        player.player.frame_changed.connect(table.set_selection_to)
+        table.animation_changed.connect(player.player.update_animation)
+
         vbox = QVBoxLayout()
-        vbox.addWidget(frames_table(self, manager, animation_name, animation))
-        vbox.addWidget(QLabel("Player", self))
+        vbox.addWidget(table)
+        vbox.addWidget(player)
         self.setLayout(vbox)
+
