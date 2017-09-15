@@ -36,8 +36,11 @@ class sub_manager:
         return self.load_func('{}/{}'.format(self.path, name))
 
     def load_all(self):
+        """Returns every data inventoried by the referenced manifest_node
+        in the format (name, data).
+        """
         return [
-            self.load(data)
+            (data, self.load(data))
             for data in self.manifest_node.data_list
         ]
 
