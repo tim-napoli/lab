@@ -9,10 +9,11 @@ add_executable(
 target_link_libraries(
     shadow-render
     lab-engine
-    lab-json
-    lab-parser
     lab-event
     lab-gfx
+    lab-data
+    lab-json
+    lab-parser
     ${OPENGL_gl_LIBRARY}
     ${GLFW_LIBRARIES}
     ${GLEW_LIBRARIES}

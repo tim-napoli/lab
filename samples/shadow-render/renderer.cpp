@@ -20,6 +20,8 @@ void renderer::start(engine::engine_interface* intf)
         intf->get_window_height()
     );
 
+    _manifest = data::manifest::load(DATA_PATH"manifest.json");
+
     _light_position = glm::vec3(VWIDTH / 2, VHEIGHT / 2, 200);
     _projection_light = gfx::light(
         _light_position,
@@ -28,30 +30,20 @@ void renderer::start(engine::engine_interface* intf)
     );
 
     _canvas_fb = gfx::framebuffer(VWIDTH, VHEIGHT);
-    _canvas_image = gfx::image(
-        (std::vector<gfx::texture>) {
-            gfx::texture::load(DATA_PATH"canvas.png"),
-            gfx::texture::load(DATA_PATH"canvas-normal.png")
-        },
-        glm::vec2(0),
-        glm::vec2(VWIDTH, VHEIGHT)
-    );
+    _canvas_image = _manifest.get_image("canvas");
     _canvas_prg = gfx::program::load(
-        DATA_PATH"canvas.vert",
-        DATA_PATH"canvas.frag"
+        DATA_PATH"shaders/canvas.vert",
+        DATA_PATH"shaders/canvas.frag"
     );
 
     _shadows_fb = gfx::framebuffer(VWIDTH, VHEIGHT);
-    _shadows_image = gfx::image(
-        (std::vector<gfx::texture>) {
-            gfx::texture::load(DATA_PATH"whole-scene.png")
-        },
-        glm::vec2(0),
-        glm::vec2(VWIDTH, VHEIGHT)
-    );
+    _shadows_image = _manifest.get_image("whole-scene");
+
+    _mime_walk = _manifest.get_animation("mime-walk");
+
     _shadows_prg = gfx::program::load(
-        DATA_PATH"shadows.vert",
-        DATA_PATH"shadows.frag"
+        DATA_PATH"shaders/shadows.vert",
+        DATA_PATH"shaders/shadows.frag"
     );
 
     for (int i = 0; i < BLUR_NUMBER_OF_PASSES; i++) {
@@ -60,18 +52,18 @@ void renderer::start(engine::engine_interface* intf)
         );
     }
     _blur_intermediate_prg = gfx::program::load(
-        DATA_PATH"blur.vert",
-        DATA_PATH"blur.frag"
+        DATA_PATH"shaders/blur.vert",
+        DATA_PATH"shaders/blur.frag"
     );
     _blur_fb = gfx::framebuffer(VWIDTH, VHEIGHT);
     _blur_mix_prg = gfx::program::load(
-        DATA_PATH"mix.vert",
-        DATA_PATH"mix.frag"
+        DATA_PATH"shaders/mix.vert",
+        DATA_PATH"shaders/mix.frag"
     );
 
     _screen_prg = gfx::program::load(
-        DATA_PATH"screen.vert",
-        DATA_PATH"screen.frag"
+        DATA_PATH"shaders/screen.vert",
+        DATA_PATH"shaders/screen.frag"
     );
     _screen_points = gfx::vertex_buffer(
         gfx::vertex_buffer::static_draw,
@@ -122,7 +114,9 @@ void renderer::shadow_render_pass_shadows() {
 
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
-    _shadows_image.draw();
+    // TODO move the mime.
+    _mime_walk.draw();
+    //_shadows_image.draw();
 }
 
 void renderer::shadow_render_pass_blur() {
@@ -159,6 +153,7 @@ void renderer::shadow_render_pass() {
 
 void renderer::render(glm::vec2 light_pos) {
     _projection_light.set_position(glm::vec3(light_pos, 200));
+    _mime_walk.update();
 
     // Rendering is done in multiple passes :
     // First, we need to render the canvas with the illumination (projection
@@ -201,5 +196,7 @@ void renderer::stop(engine::engine_interface* intf)
 
     _screen_prg.destroy();
     _screen_points.destroy();
+
+    _manifest.destroy();
 }
 

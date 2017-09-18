@@ -7,6 +7,8 @@
 
 class renderer : public lab::gfx::renderer {
   private:
+    lab::data::manifest   _manifest;
+
     lab::gfx::light       _projection_light;
 
     lab::gfx::framebuffer _canvas_fb;
@@ -15,6 +17,7 @@ class renderer : public lab::gfx::renderer {
 
     lab::gfx::framebuffer _shadows_fb;
     lab::gfx::image       _shadows_image;
+    lab::gfx::animation   _mime_walk;
     lab::gfx::program     _shadows_prg;
 
     lab::gfx::framebuffer _blur_intermediate_fbs[BLUR_NUMBER_OF_PASSES];
