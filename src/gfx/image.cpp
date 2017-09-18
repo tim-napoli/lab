@@ -28,16 +28,21 @@ image::~image() {
 }
 
 void image::do_points(glm::vec2 dims) {
+    float x1 = -_hot_point.x;
+    float x2 = -_hot_point.x + dims.x;
+    float y1 = -_hot_point.y;
+    float y2 = -_hot_point.y + dims.y;
+
     _points = vertex_buffer(
         vertex_buffer::static_draw,
         (std::vector<glm::vec2>) {
-            glm::vec2(0.0, 0.0),        glm::vec2(0.0, 0.0),
-            glm::vec2(dims.x, 0.0),     glm::vec2(1.0, 0.0),
-            glm::vec2(dims.x, dims.y),  glm::vec2(1.0, 1.0),
+            glm::vec2(x1, y1), glm::vec2(0.0, 0.0),
+            glm::vec2(x2, y1), glm::vec2(1.0, 0.0),
+            glm::vec2(x2, y2), glm::vec2(1.0, 1.0),
 
-            glm::vec2(0.0, 0.0),        glm::vec2(0.0, 0.0),
-            glm::vec2(0.0, dims.y),     glm::vec2(0.0, 1.0),
-            glm::vec2(dims.x, dims.y),  glm::vec2(1.0, 1.0),
+            glm::vec2(x1, y1), glm::vec2(0.0, 0.0),
+            glm::vec2(x1, y2), glm::vec2(0.0, 1.0),
+            glm::vec2(x2, y2), glm::vec2(1.0, 1.0),
     }, 2);
 }
 
