@@ -1,6 +1,8 @@
 #include "constants.hpp"
 #include "renderer.hpp"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 using namespace lab;
 
 renderer::renderer(int virtual_width, int virtual_height)
@@ -107,6 +109,14 @@ void renderer::shadow_render_pass_shadows() {
     _shadows_prg.set_uniform_mat4(
         "projection_matrix", get_projection_matrix_ptr()
     );
+
+    glm::mat4 transformation_matrix = glm::translate(
+        glm::mat4(), glm::vec3(VWIDTH / 2.0, VHEIGHT / 2.0, 0.0)
+    );
+    _shadows_prg.set_uniform_mat4(
+        "transformation_matrix", &transformation_matrix
+    );
+
     _shadows_prg.set_uniform_sampler2d(
         "tex", 0
     );
