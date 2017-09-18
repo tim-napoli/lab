@@ -409,7 +409,7 @@ json json::parse(const std::string& path)
     input.open(path);
     if (!input.is_open()) {
         throw util::exception::build_formatted(
-            "cannot open json file ", path
+            "cannot open json file {}", path
         );
     }
     return json::parse(input);
