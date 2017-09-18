@@ -162,7 +162,7 @@ class json {
      * @throw a util::exception if the file cannot be opened.
      * @throw a parser::exception if the file cannot be parsed.
      */
-    static json parse(std::string& path)
+    static json parse(const std::string& path)
         throw(parser::exception, util::exception);
 };
 

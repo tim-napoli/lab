@@ -402,7 +402,7 @@ json json::parse(std::istream& input)
     return parse_object(input);
 }
 
-json json::parse(std::string& path)
+json json::parse(const std::string& path)
         throw(parser::exception, util::exception)
 {
     std::ifstream input;
