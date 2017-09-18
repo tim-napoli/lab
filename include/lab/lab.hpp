@@ -31,6 +31,8 @@
 #include "lab/gfx/image.hpp"
 #include "lab/gfx/animation.hpp"
 
+#include "lab/data/manifest.hpp"
+
 namespace lab {
 
 }
