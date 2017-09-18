@@ -365,5 +365,30 @@ class JsonTestSuite : public CxxTest::TestSuite {
         } catch (lab::parser::exception ex) {
         }
     }
+
+    void testArraySize() {
+        json array = json(std::vector<json> {
+            json(value("1")),
+            json(value("2")),
+            json(value("3"))
+        });
+        TS_ASSERT(array.size() == 3);
+    }
+
+    void testArrayIterator() {
+        json array = json(std::vector<json> {
+            json(value("1")),
+            json(value("2")),
+            json(value("3"))
+        });
+        auto it = array.begin();
+        TS_ASSERT(it->get_value().get<int>() == 1);
+        it++;
+        TS_ASSERT(it->get_value().get<int>() == 2);
+        it++;
+        TS_ASSERT(it->get_value().get<int>() == 3);
+        it++;
+        TS_ASSERT(it == array.end());
+    }
 };
 

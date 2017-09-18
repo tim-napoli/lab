@@ -118,6 +118,21 @@ class json {
         throw(util::exception);
 
     /**
+     * @return the length of this json array.
+     */
+    size_t size() const;
+
+    /**
+     * Returns an iterator to the begining of a json array.
+     */
+    std::vector<json>::iterator begin();
+
+    /**
+     * Returns an iterator to the end of a json array.
+     */
+    std::vector<json>::iterator end();
+
+    /**
      * @see get_member
      */
     const json& operator[](const std::string& name) const

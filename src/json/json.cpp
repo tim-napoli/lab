@@ -121,6 +121,21 @@ void json::set_element(int index, const json& member)
     }
 }
 
+size_t json::size() const {
+    assert(_tag == json::array);
+    return _array.size();
+}
+
+std::vector<json>::iterator json::begin() {
+    assert(_tag == json::array);
+    return _array.begin();
+}
+
+std::vector<json>::iterator json::end() {
+    assert(_tag == json::array);
+    return _array.end();
+}
+
 const json& json::operator[](const std::string& name) const
         throw(util::exception)
 {
