@@ -1,16 +1,26 @@
 from PyQt5.QtWidgets import (
     QWidget, QListView, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QDialog,
-    QGraphicsView, QGraphicsScene
+    QGraphicsView, QGraphicsScene, QLineEdit, QGridLayout
 )
 from PyQt5.QtGui import (
     QStandardItem, QStandardItemModel, QPixmap, QPen, QColor, QBrush
 )
 from PyQt5.QtCore import QRectF, Qt, QEvent, pyqtSignal
 
+from pylab.math.point import point
 from qtui import textures_edit_pane
 from qtui.textures_edit_pane import texture_miniature
 from qtui.miniature_selection_popup import miniature_selection_popup
 from qtui.data_list import data_list
+
+def get_image_original_dimensions(manager, image):
+    if len(image.textures) == 0:
+        return point(0, 0)
+    else:
+        pixmap = QPixmap(
+            manager["textures"].load(image.textures[0])
+        )
+        return point(pixmap.width(), pixmap.height())
 
 # textures_list ---------------------------------------------------------------
 class texture_popup(miniature_selection_popup):
@@ -32,6 +42,10 @@ class textures_list(data_list):
         if dialog.show() == QDialog.Accepted:
             texture = dialog.get_result().texture
             self.image.add_texture(texture)
+            if len(self.image.textures) == 1:
+                self.image.set_dimensions(
+                    get_image_original_dimensions(self.manager, self.image)
+                )
             self.manager["images"].save(self.image_name, self.image)
             return texture
 
@@ -52,6 +66,71 @@ class textures_list(data_list):
         self.image.move_down_texture(texture)
         self.manager["images"].save(self.image_name, self.image)
         return True
+
+# dimensions_editor -----------------------------------------------------------
+
+class dimensions_editor(QWidget):
+    def __init__(self, parent, manager, image_name, image):
+        super().__init__(parent)
+
+        self.manager = manager
+        self.image = image
+        self.image_name = image_name
+
+        vbox = QVBoxLayout()
+
+        grid = QGridLayout()
+        grid_widget = QWidget(self)
+        self.width_input = QLineEdit(grid_widget)
+        self.height_input = QLineEdit(grid_widget)
+        grid.addWidget(QLabel("Width", grid_widget), 0, 0);
+        grid.addWidget(self.width_input, 0, 1)
+        grid.addWidget(QLabel("Height", grid_widget), 1, 0);
+        grid.addWidget(self.height_input, 1, 1)
+        grid_widget.setLayout(grid)
+
+        hbox = QHBoxLayout()
+        hbox_widget = QWidget(self)
+        reset_button = QPushButton("Reset", hbox_widget)
+        reset_button.clicked.connect(self.reset)
+        save_button = QPushButton("Save", hbox_widget)
+        save_button.clicked.connect(self.save)
+        hbox.addWidget(save_button)
+        hbox.addWidget(reset_button)
+        hbox_widget.setLayout(hbox)
+
+        vbox.addWidget(grid_widget)
+        vbox.addWidget(hbox_widget)
+
+        self.setLayout(vbox)
+
+        self.update_dimensions_input()
+
+    def show_error_popup(self, message):
+        error_dialog = QErrorMessage()
+        error_dialog.showMessage(message)
+        error_dialog.exec_()
+
+    def update_dimensions_input(self):
+        self.width_input.setText(str(self.image.dimensions.x))
+        self.height_input.setText(str(self.image.dimensions.y))
+
+    def update(self):
+        self.update_dimensions_input()
+
+    def reset(self):
+        dimensions = get_image_original_dimensions(self.manager, self.image)
+        self.image.set_dimensions(dimensions)
+        self.update_dimensions_input()
+
+    def save(self):
+        try:
+            width = int(self.width_input.text())
+            height = int(self.height_input.text())
+        except Exception as ex:
+            self.show_error_message("Values must be integers")
+        self.image.set_dimensions(point(width, height))
+        self.manager["images"].save(self.image_name, self.image)
 
 # hot_point_editor ------------------------------------------------------------
 class hot_point_scene(QGraphicsScene):
@@ -113,11 +192,14 @@ class image_edit_pane(QWidget):
         super().__init__(parent)
 
         list_view = textures_list(self, manager, image_name, image)
+        dimensions = dimensions_editor(self, manager, image_name, image)
         editor = hot_point_editor(self, manager, image_name, image)
 
         list_view.data_changed.connect(editor.draw_pixmap)
+        list_view.data_changed.connect(dimensions.update)
 
         vbox = QVBoxLayout()
         vbox.addWidget(list_view)
+        vbox.addWidget(dimensions)
         vbox.addWidget(editor)
         self.setLayout(vbox)

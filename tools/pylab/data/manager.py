@@ -86,7 +86,7 @@ class manager:
             ),
             "images": sub_manager(
                 path + "/images", manifest.get_node("images"),
-                image.image([], point.point(0, 0)), image.load_json
+                image.image([], point.point(0, 0), point.point(0, 0)), image.load_json
             ),
             "animations": sub_manager(
                 path + "/animations", manifest.get_node("animations"),
