@@ -40,7 +40,7 @@ class value {
         return value;
     }
 
-    const std::string& get() {
+    const std::string& get() const {
         return _value;
     }
 
