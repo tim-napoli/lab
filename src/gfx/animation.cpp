@@ -18,7 +18,6 @@ void animation_frame::draw() const {
 }
 
 void animation_frame::destroy() {
-    _image.destroy();
 }
 
 animation::animation()

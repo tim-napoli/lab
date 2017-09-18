@@ -64,9 +64,6 @@ void image::draw() const {
 }
 
 void image::destroy() {
-    std::for_each(_textures.begin(), _textures.end(), [](texture& tex) {
-        tex.destroy();
-    });
     _points.destroy();
 }
 
