@@ -27,7 +27,14 @@ CXXTEST_ADD_TEST(
     ${CMAKE_CURRENT_SOURCE_DIR}/polygon.hpp
 )
 
+CXXTEST_ADD_TEST(
+    transform
+    transform.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/transform.hpp
+)
+
 target_link_libraries(segment test-math lab-math)
 target_link_libraries(triangle test-math lab-math)
 target_link_libraries(box test-math lab-math)
 target_link_libraries(polygon test-math lab-math)
+target_link_libraries(transform test-math lab-math)
