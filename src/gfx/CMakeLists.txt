@@ -10,4 +10,5 @@ add_library(
     program.cpp
     pass.cpp
     drawable.cpp
+    draw-pass.cpp
 )
