@@ -56,6 +56,15 @@ void program::set_uniform_mat4(const std::string& name,
     glUniformMatrix4fv(loc, 1, false, (const GLfloat*)mat);
 }
 
+void program::set_uniform_mat3(const std::string& name,
+                               const glm::mat3* mat)
+        throw(util::exception)
+{
+    use();
+    GLint loc = get_uniform_location(name);
+    glUniformMatrix3fv(loc, 1, false, (const GLfloat*)mat);
+}
+
 void program::set_uniform_sampler2d(const std::string& name,
                                     GLuint id)
         throw(util::exception)

@@ -42,6 +42,9 @@ class program {
     void set_uniform_mat4(const std::string& name, const glm::mat4* mat)
         throw(util::exception);
 
+    void set_uniform_mat3(const std::string& name, const glm::mat3* mat)
+        throw(util::exception);
+
     void set_uniform_sampler2d(const std::string& name, GLuint id)
         throw(util::exception);
 
