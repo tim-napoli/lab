@@ -11,4 +11,5 @@ add_library(
     pass.cpp
     drawable.cpp
     draw-pass.cpp
+    post-process-pass.cpp
 )
