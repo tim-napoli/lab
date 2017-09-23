@@ -9,4 +9,5 @@ add_library(
     animation.cpp
     program.cpp
     pass.cpp
+    drawable.cpp
 )
