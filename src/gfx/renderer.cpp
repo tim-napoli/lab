@@ -45,6 +45,12 @@ void renderer::use_framebuffer(const framebuffer& fb) {
     glBindFramebuffer(GL_FRAMEBUFFER, fb.get_fbo_id());
 }
 
+void renderer::use_framebuffer(const framebuffer* fb) {
+    // Set viewport to current framebuffer.
+    resize(fb->get_width(), fb->get_height());
+    glBindFramebuffer(GL_FRAMEBUFFER, fb->get_fbo_id());
+}
+
 void renderer::use_screen() {
     resize(_win_dimensions.x, _win_dimensions.y);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

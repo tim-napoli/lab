@@ -35,7 +35,7 @@ class renderer {
   public:
     renderer(int virtual_width, int virtual_height);
 
-    ~renderer();
+    virtual ~renderer();
 
     void resize(int win_width, int win_height);
 
@@ -58,6 +58,7 @@ class renderer {
      * Set the given framebuffer as rendering target.
      */
     void use_framebuffer(const framebuffer& fb);
+    void use_framebuffer(const framebuffer* fb);
 
     /**
      * Set the screen as rendering target.
