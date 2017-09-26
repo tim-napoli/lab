@@ -24,7 +24,7 @@ void screen::update(engine::engine_interface* intf)
     throw(util::exception)
 {
     _light_position.move();
-    _renderer.render(_light_position.get_position());
+    _renderer.render();
 }
 
 void screen::stop(engine::engine_interface* intf)

@@ -4,7 +4,7 @@ const float off = 1.0 / 500;
 
 in vec2 tex_coords;
 out vec4 out_color;
-uniform sampler2D tex;
+uniform sampler2D shadows;
 
 void main() {
     vec2 offsets[9] = vec2[](
@@ -29,7 +29,7 @@ void main() {
 
     vec3 col = vec3(0);
     for (int i = 0; i < 9; i++) {
-        col += texture(tex, tex_coords.st + offsets[i]).rgb * kernel[i];
+        col += texture(shadows, tex_coords.st + offsets[i]).rgb * kernel[i];
     }
 
     out_color = vec4(col, 1.0);

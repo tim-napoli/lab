@@ -14,6 +14,7 @@ target_link_libraries(
     lab-data
     lab-json
     lab-parser
+    lab-math
     ${OPENGL_gl_LIBRARY}
     ${GLFW_LIBRARIES}
     ${GLEW_LIBRARIES}

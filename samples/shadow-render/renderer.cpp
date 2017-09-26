@@ -6,12 +6,61 @@
 using namespace lab;
 
 renderer::renderer(int virtual_width, int virtual_height)
-    : gfx::renderer (virtual_width, virtual_height)
+    : gfx::pipeline(virtual_width, virtual_height)
 {
 
 }
 renderer::~renderer() {
 
+}
+
+void renderer::build_pipeline() {
+    gfx::draw_pass* canvas_pass = new gfx::draw_pass(
+        _canvas_prg, new gfx::framebuffer(VWIDTH, VHEIGHT)
+    );
+    gfx::draw_pass* shadows_pass = new gfx::draw_pass(
+        _shadows_prg, new gfx::framebuffer(VWIDTH, VHEIGHT)
+    );
+    // In these passes, input vertices must be in [-1.0, 1.0]
+    gfx::post_process_pass* blur_1_pass = new gfx::post_process_pass(
+        _blur_intermediate_prg, new gfx::framebuffer(VWIDTH, VHEIGHT),
+        math::box(-1.0, 1.0, -1.0, 1.0)
+    );
+    blur_1_pass->add_input("shadows", shadows_pass->get_output());
+
+    gfx::post_process_pass* blur_2_pass = new gfx::post_process_pass(
+        _blur_intermediate_prg, new gfx::framebuffer(VWIDTH / 2, VHEIGHT / 2),
+        math::box(-1.0, 1.0, -1.0, 1.0)
+    );
+    blur_2_pass->add_input("shadows", shadows_pass->get_output());
+
+    gfx::post_process_pass* blur_3_pass = new gfx::post_process_pass(
+        _blur_intermediate_prg, new gfx::framebuffer(VWIDTH / 4, VHEIGHT / 4),
+        math::box(-1.0, 1.0, -1.0, 1.0)
+    );
+    blur_3_pass->add_input("shadows", shadows_pass->get_output());
+
+    gfx::post_process_pass* blur_mix_pass = new gfx::post_process_pass(
+        _blur_mix_prg, new gfx::framebuffer(VWIDTH, VHEIGHT),
+        math::box(-1.0, 1.0, -1.0, 1.0)
+    );
+    blur_mix_pass->add_input("blur_1", blur_1_pass->get_output());
+    blur_mix_pass->add_input("blur_2", blur_2_pass->get_output());
+    blur_mix_pass->add_input("blur_3", blur_3_pass->get_output());
+
+    gfx::post_process_pass* screen_pass = new gfx::post_process_pass(
+        _screen_prg, NULL, math::box(-1.0, 1.0, -1.0, 1.0)
+    );
+    screen_pass->add_input("canvas_texture", canvas_pass->get_output());
+    screen_pass->add_input("shadows_texture", blur_mix_pass->get_output());
+
+    add_draw_pass("canvas_pass", canvas_pass);
+    add_draw_pass("shadows_pass", shadows_pass);
+    add_post_process_pass("blur_1_pass", blur_1_pass);
+    add_post_process_pass("blur_2_pass", blur_2_pass);
+    add_post_process_pass("blur_3_pass", blur_3_pass);
+    add_post_process_pass("blur_mix_pass", blur_mix_pass);
+    add_post_process_pass("screen_pass", screen_pass);
 }
 
 void renderer::start(engine::engine_interface* intf)
@@ -31,181 +80,67 @@ void renderer::start(engine::engine_interface* intf)
         glm::vec3(0.8, 0.5, 0.1)
     );
 
-    _canvas_fb = gfx::framebuffer(VWIDTH, VHEIGHT);
-    _canvas_image = _manifest.get_image("canvas");
     _canvas_prg = gfx::program::load(
         DATA_PATH"shaders/canvas.vert",
         DATA_PATH"shaders/canvas.frag"
     );
-
-    _shadows_fb = gfx::framebuffer(VWIDTH, VHEIGHT);
-    _shadows_image = _manifest.get_image("whole-scene");
-
-    _mime_walk = _manifest.get_animation("mime-walk");
-
     _shadows_prg = gfx::program::load(
         DATA_PATH"shaders/shadows.vert",
         DATA_PATH"shaders/shadows.frag"
     );
-
-    for (int i = 0; i < BLUR_NUMBER_OF_PASSES; i++) {
-        _blur_intermediate_fbs[i] = gfx::framebuffer(
-            VWIDTH >> i, VHEIGHT >> i
-        );
-    }
     _blur_intermediate_prg = gfx::program::load(
         DATA_PATH"shaders/blur.vert",
         DATA_PATH"shaders/blur.frag"
     );
-    _blur_fb = gfx::framebuffer(VWIDTH, VHEIGHT);
     _blur_mix_prg = gfx::program::load(
         DATA_PATH"shaders/mix.vert",
         DATA_PATH"shaders/mix.frag"
     );
-
     _screen_prg = gfx::program::load(
         DATA_PATH"shaders/screen.vert",
         DATA_PATH"shaders/screen.frag"
     );
-    _screen_points = gfx::vertex_buffer(
-        gfx::vertex_buffer::static_draw,
-        (std::vector<glm::vec2>) {
-            glm::vec2(-1.0, -1.0), glm::vec2(0.0, 0.0),
-            glm::vec2(+1.0, -1.0), glm::vec2(1.0, 0.0),
-            glm::vec2(+1.0, +1.0), glm::vec2(1.0, 1.0),
 
-            glm::vec2(-1.0, -1.0), glm::vec2(0.0, 0.0),
-            glm::vec2(-1.0, +1.0), glm::vec2(0.0, 1.0),
-            glm::vec2(+1.0, +1.0), glm::vec2(1.0, 1.0),
-        }, 2
+    _shadows_image = _manifest.get_image("whole-scene");
+    _mime_walk = _manifest.get_animation("mime-walk");
+    _canvas_image = _manifest.get_image("canvas");
+
+    _canvas_image_drawable = gfx::image_drawable(
+        glm::mat3(), &_canvas_image,
+        {"diffuse_map", "normal_map"}
     );
+    _shadows_image_drawable = gfx::image_drawable(
+        glm::mat3(), &_shadows_image,
+        {"shadow_texture"}
+    );
+
+    build_pipeline();
 }
 
-void renderer::canvas_render_pass() {
-        use_framebuffer(_canvas_fb);
-
-        _canvas_prg.set_uniform_mat4(
-            "projection_matrix", get_projection_matrix_ptr()
-        );
-        _canvas_prg.set_uniform_vec3(
-            "light_position", _projection_light.get_position()
-        );
-        _canvas_prg.set_uniform_vec3(
-            "light_color", _projection_light.get_color()
-        );
-        _canvas_prg.set_uniform_sampler2d(
-            "diffuse_map", 0
-        );
-        _canvas_prg.set_uniform_sampler2d(
-            "normal_map", 1
-        );
-
-        _canvas_prg.use();
-        _canvas_image.draw();
-}
-
-void renderer::shadow_render_pass_shadows() {
-    use_framebuffer(_shadows_fb);
-    _shadows_prg.set_uniform_mat4(
-        "projection_matrix", get_projection_matrix_ptr()
-    );
-
-    glm::mat4 transformation_matrix = glm::translate(
-        glm::mat4(), glm::vec3(VWIDTH / 2.0, VHEIGHT / 2.0, 0.0)
-    );
-    _shadows_prg.set_uniform_mat4(
-        "transformation_matrix", &transformation_matrix
-    );
-
-    _shadows_prg.set_uniform_sampler2d(
-        "tex", 0
-    );
-    _shadows_prg.use();
-
-    glClearColor(1.0, 1.0, 1.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
-    // TODO move the mime.
-    _mime_walk.draw();
-    //_shadows_image.draw();
-}
-
-void renderer::shadow_render_pass_blur() {
-    _shadows_fb.bind_texture(GL_TEXTURE0);
-    _blur_intermediate_prg.set_uniform_sampler2d(
-        "tex", 0
-    );
-    _blur_intermediate_prg.use();
-    for (int i = 0; i < BLUR_NUMBER_OF_PASSES; i++) {
-        use_framebuffer(_blur_intermediate_fbs[i]);
-        _screen_points.draw();
-    }
-
-    use_framebuffer(_blur_fb);
-    glClearColor(1.0, 1.0, 1.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
-    _blur_mix_prg.set_uniform_sampler2d(
-        "tex", 0
-    );
-    _blur_mix_prg.use();
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ZERO, GL_SRC_COLOR);
-    for (int i = 0; i < BLUR_NUMBER_OF_PASSES; i++) {
-        _blur_intermediate_fbs[i].bind_texture(GL_TEXTURE0);
-        _screen_points.draw();
-    }
-    glDisable(GL_BLEND);
-}
-
-void renderer::shadow_render_pass() {
-    shadow_render_pass_shadows();
-    shadow_render_pass_blur();
-}
-
-void renderer::render(glm::vec2 light_pos) {
-    _projection_light.set_position(glm::vec3(light_pos, 200));
+void renderer::render() throw(util::exception) {
+    _projection_light.set_position(glm::vec3(VWIDTH / 2, VHEIGHT / 2, 200));
     _mime_walk.update();
 
-    // Rendering is done in multiple passes :
-    // First, we need to render the canvas with the illumination (projection
-    // light). We store that rendering in a framebuffer.
-    // Next, we need to render the shadows in an other framebuffer, and to
-    // apply the blur effect on it.
-    // Finally, we will draw to the screen the mix of the canvas and the
-    // shadows frambeuffers on the screen.
-    canvas_render_pass();
-    shadow_render_pass();
+    get_draw_pass("shadows_pass")->add_drawable(&_shadows_image_drawable);
+    get_draw_pass("canvas_pass")->add_drawable(&_canvas_image_drawable);
+    _canvas_prg.set_uniform_vec3("light_position", _light_position);
+    _canvas_prg.set_uniform_vec3("light_color", _projection_light.get_color());
 
-    use_screen();
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
-    _screen_prg.use();
-    _screen_prg.set_uniform_sampler2d("canvas_tex", 0);
-    _screen_prg.set_uniform_sampler2d("shadows_tex", 1);
-    _canvas_fb.bind_texture(GL_TEXTURE0);
-    _blur_fb.bind_texture(GL_TEXTURE1);
-    _screen_points.draw();
+    try {
+        gfx::pipeline::render();
+    } catch (util::exception ex) {
+        std::cerr << ex.get_message() << std::endl;
+    }
 }
 
 void renderer::stop(engine::engine_interface* intf)
     throw(util::exception)
 {
+    _shadows_prg.destroy();
     _canvas_prg.destroy();
-    _canvas_image.destroy();
-    _canvas_fb.destroy();
-
-    _shadows_fb.destroy();
-    _shadows_image.destroy();
-    _shadows_fb.destroy();
-
-    for (int i = 0; i < BLUR_NUMBER_OF_PASSES; i++) {
-        _blur_intermediate_fbs[i].destroy();
-    }
     _blur_intermediate_prg.destroy();
-    _blur_fb.destroy();
     _blur_mix_prg.destroy();
-
     _screen_prg.destroy();
-    _screen_points.destroy();
 
     _manifest.destroy();
 }
