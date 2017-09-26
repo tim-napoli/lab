@@ -48,7 +48,7 @@ void framebuffer::destroy() {
     glDeleteFramebuffers(1, &_fbo_id);
 }
 
-void framebuffer::use_texture(GLuint unit) {
+void framebuffer::bind_texture(GLuint unit) const {
     glActiveTexture(unit);
     glBindTexture(GL_TEXTURE_2D, _texture_id);
 }

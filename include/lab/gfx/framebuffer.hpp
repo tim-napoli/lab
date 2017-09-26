@@ -51,7 +51,7 @@ class framebuffer {
     /**
      * Binds the framebuffer's texture to the specific OpenGL texture unit.
      */
-    void use_texture(GLuint unit);
+    void bind_texture(GLuint unit) const;
 };
 
 }}

@@ -130,7 +130,7 @@ void renderer::shadow_render_pass_shadows() {
 }
 
 void renderer::shadow_render_pass_blur() {
-    _shadows_fb.use_texture(GL_TEXTURE0);
+    _shadows_fb.bind_texture(GL_TEXTURE0);
     _blur_intermediate_prg.set_uniform_sampler2d(
         "tex", 0
     );
@@ -150,7 +150,7 @@ void renderer::shadow_render_pass_blur() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_ZERO, GL_SRC_COLOR);
     for (int i = 0; i < BLUR_NUMBER_OF_PASSES; i++) {
-        _blur_intermediate_fbs[i].use_texture(GL_TEXTURE0);
+        _blur_intermediate_fbs[i].bind_texture(GL_TEXTURE0);
         _screen_points.draw();
     }
     glDisable(GL_BLEND);
@@ -181,8 +181,8 @@ void renderer::render(glm::vec2 light_pos) {
     _screen_prg.use();
     _screen_prg.set_uniform_sampler2d("canvas_tex", 0);
     _screen_prg.set_uniform_sampler2d("shadows_tex", 1);
-    _canvas_fb.use_texture(GL_TEXTURE0);
-    _blur_fb.use_texture(GL_TEXTURE1);
+    _canvas_fb.bind_texture(GL_TEXTURE0);
+    _blur_fb.bind_texture(GL_TEXTURE1);
     _screen_points.draw();
 }
 
