@@ -12,4 +12,5 @@ add_library(
     drawable.cpp
     draw-pass.cpp
     post-process-pass.cpp
+    pipeline.cpp
 )
