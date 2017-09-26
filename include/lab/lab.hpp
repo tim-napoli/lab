@@ -30,6 +30,11 @@
 #include "lab/gfx/light.hpp"
 #include "lab/gfx/image.hpp"
 #include "lab/gfx/animation.hpp"
+#include "lab/gfx/pass.hpp"
+#include "lab/gfx/draw-pass.hpp"
+#include "lab/gfx/post-process-pass.hpp"
+#include "lab/gfx/pipeline.hpp"
+#include "lab/gfx/image-drawable.hpp"
 
 #include "lab/data/manifest.hpp"
 
