@@ -11,6 +11,7 @@
 #include <glm/glm.hpp>
 #include "lab/gfx/texture.hpp"
 #include "lab/gfx/vertex-buffer.hpp"
+#include "lab/gfx/drawable.hpp"
 
 namespace lab { namespace gfx {
 
@@ -34,9 +35,7 @@ class image {
     image();
 
     /**
-     * @param texs Textures the image will contain. The textures are now owned
-     *             by the image, and will be destroy at the next image's
-     *             destroy call.
+     * @param texs Textures the image will contain.
      * @param hot_point  The image anchor point.
      * @param dimensions The image dimensions.
      */
@@ -51,13 +50,15 @@ class image {
 
     ~image();
 
+    const std::vector<texture>& get_textures() const {return _textures;}
+
     /**
      * Draw the image to the current rendering target.
      */
     void draw() const;
 
     /**
-     * Destroy the image and all its textures.
+     * Destroy the image.
      */
     void destroy();
 };
