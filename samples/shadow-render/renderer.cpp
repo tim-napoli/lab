@@ -101,16 +101,14 @@ void renderer::start(engine::engine_interface* intf)
         DATA_PATH"shaders/screen.frag"
     );
 
-    _shadows_image = _manifest.get_image("whole-scene");
     _mime_walk = _manifest.get_animation("mime-walk");
-    _canvas_image = _manifest.get_image("canvas");
 
     _canvas_image_drawable = gfx::image_drawable(
-        glm::mat3(), &_canvas_image,
+        glm::mat3(), _manifest.get_image_ptr("canvas"),
         {"diffuse_map", "normal_map"}
     );
     _shadows_image_drawable = gfx::image_drawable(
-        glm::mat3(), &_shadows_image,
+        glm::mat3(), _manifest.get_image_ptr("whole-scene"),
         {"shadow_texture"}
     );
 
