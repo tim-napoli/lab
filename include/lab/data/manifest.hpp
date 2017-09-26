@@ -42,6 +42,9 @@ class manifest {
     gfx::image get_image(const std::string& image) const
         throw(util::exception);
 
+    const gfx::image* get_image_ptr(const std::string& image) const
+        throw(util::exception);
+
     gfx::animation get_animation(const std::string& animation) const
         throw(util::exception);
 

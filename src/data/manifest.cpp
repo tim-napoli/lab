@@ -41,6 +41,18 @@ gfx::image manifest::get_image(const std::string& image) const
     return it->second;
 }
 
+const gfx::image* manifest::get_image_ptr(const std::string& image) const
+        throw(util::exception)
+{
+    auto it = _images.find(image);
+    if (it == _images.end()) {
+        throw util::exception::build_formatted(
+            "cannot find image {}", image
+        );
+    }
+    return &it->second;
+}
+
 gfx::animation manifest::get_animation(const std::string& animation) const
         throw(util::exception)
 {
