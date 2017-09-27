@@ -15,8 +15,6 @@ class renderer : public lab::gfx::pipeline {
     lab::gfx::program     _blur_mix_prg;
     lab::gfx::program     _screen_prg;
 
-    lab::gfx::image       _canvas_image;
-    lab::gfx::image       _shadows_image;
     lab::gfx::animation   _mime_walk;
     lab::gfx::light       _projection_light;
     glm::vec3             _light_position;
