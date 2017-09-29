@@ -6,7 +6,7 @@ from pylab.data import manifest
 from pylab.gfx import texture
 from pylab.gfx import image
 from pylab.gfx import animation
-from pylab.math import point
+from pylab.math.vec2 import vec2
 
 # sub_manager -----------------------------------------------------------------
 class sub_manager:
@@ -86,7 +86,7 @@ class manager:
             ),
             "images": sub_manager(
                 path + "/images", manifest.get_node("images"),
-                image.image([], point.point(0, 0), point.point(0, 0)), image.load_json
+                image.image([], vec2(0, 0), vec2(0, 0)), image.load_json
             ),
             "animations": sub_manager(
                 path + "/animations", manifest.get_node("animations"),

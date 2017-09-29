@@ -7,7 +7,7 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtCore import QRectF, Qt, QEvent, pyqtSignal
 
-from pylab.math.point import point
+from pylab.math.vec2 import vec2
 from qtui import textures_edit_pane
 from qtui.textures_edit_pane import texture_miniature
 from qtui.miniature_selection_popup import miniature_selection_popup
@@ -15,12 +15,12 @@ from qtui.data_list import data_list
 
 def get_image_original_dimensions(manager, image):
     if len(image.textures) == 0:
-        return point(0, 0)
+        return vec2(0, 0)
     else:
         pixmap = QPixmap(
             manager["textures"].load(image.textures[0])
         )
-        return point(pixmap.width(), pixmap.height())
+        return vec2(pixmap.width(), pixmap.height())
 
 # textures_list ---------------------------------------------------------------
 class texture_popup(miniature_selection_popup):
@@ -129,7 +129,7 @@ class dimensions_editor(QWidget):
             height = int(self.height_input.text())
         except Exception as ex:
             self.show_error_message("Values must be integers")
-        self.image.set_dimensions(point(width, height))
+        self.image.set_dimensions(vec2(width, height))
         self.manager["images"].save(self.image_name, self.image)
 
 # hot_point_editor ------------------------------------------------------------

@@ -1,5 +1,6 @@
 import json
-from pylab.math import point
+from pylab.math.vec2 import vec2
+from pylab.math.json import load_vec2_json, build_vec2_json
 
 class image:
     def __init__(self, textures, hot_point, dimensions):
@@ -46,8 +47,8 @@ class image:
         with open(path, 'w+') as f:
             content = json.dumps({
                 "textures": self.textures,
-                "hot_point": self.hot_point.to_json(),
-                "dimensions": self.dimensions.to_json()
+                "hot_point": build_vec2_json(self.hot_point),
+                "dimensions": build_vec2_json(self.dimensions)
             })
             f.write(content)
 
@@ -56,7 +57,7 @@ def load_json(json_path):
         content = f.read()
         data = json.loads(content)
         textures = data["textures"]
-        hot_point = point.load_json(data["hot_point"])
-        dimensions = point.load_json(data["dimensions"])
+        hot_point = load_vec2_json(data["hot_point"])
+        dimensions = load_vec2_json(data["dimensions"])
         return image(textures, hot_point, dimensions)
 
