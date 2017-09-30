@@ -1,5 +1,5 @@
 import json
-from pylab.math.vec2 import vec2
+from glm import vec2
 from pylab.math.json import load_vec2_json, build_vec2_json
 
 class image:

@@ -7,7 +7,7 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtCore import QRectF, Qt, QEvent, pyqtSignal
 
-from pylab.math.vec2 import vec2
+from glm import vec2
 from qtui import textures_edit_pane
 from qtui.textures_edit_pane import texture_miniature
 from qtui.miniature_selection_popup import miniature_selection_popup

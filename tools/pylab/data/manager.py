@@ -2,11 +2,11 @@ import os
 import os.path
 import shutil
 
+from glm import vec2
 from pylab.data import manifest
 from pylab.gfx import texture
 from pylab.gfx import image
 from pylab.gfx import animation
-from pylab.math.vec2 import vec2
 
 # sub_manager -----------------------------------------------------------------
 class sub_manager:

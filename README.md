@@ -8,3 +8,12 @@ development using the C++ language.
 
 The Lab Engine library is intended to be simple.
 
+## Dependencies
+
+### Python dependencies
+
+The Lab engine relies on these Python3 dependencies:
+
+        pyqt5
+        PyGLM (install with pip3 : sudo pip3 install PyGLM --pre)
+

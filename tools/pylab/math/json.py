@@ -1,6 +1,6 @@
 import json
 
-from .vec2 import vec2
+from glm import vec2
 
 def load_vec2_json(json_content):
     return vec2(json_content["x"], json_content["y"])
