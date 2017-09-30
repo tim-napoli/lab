@@ -10,10 +10,16 @@ The Lab Engine library is intended to be simple.
 
 ## Dependencies
 
+### C++ dependencies
+
+        libglfw3-dev
+        libsoil-dev
+        libglm-dev
+        cxxtest
+
 ### Python dependencies
 
-The Lab engine relies on these Python3 dependencies:
-
         pyqt5
+        pyqt5.qtopengl
         PyGLM (install with pip3 : sudo pip3 install PyGLM --pre)
 
