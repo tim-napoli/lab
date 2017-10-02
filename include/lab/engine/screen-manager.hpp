@@ -23,8 +23,8 @@ enum screen_state {
 };
 
 struct screen_entry {
-    screen_state            state;
-    std::unique_ptr<screen> scr;
+    screen_state state;
+    screen*      scr;
 };
 
 /**
@@ -47,7 +47,7 @@ class screen_manager : public event::source
 
     void stop(engine_interface* intf) throw(util::exception);
 
-    void push_screen(std::unique_ptr<screen> scr);
+    void push_screen(screen* scr);
 
     void pop_screen(engine_interface* intf) throw(util::exception);
 

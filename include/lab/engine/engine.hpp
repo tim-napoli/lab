@@ -75,8 +75,9 @@ class engine : public event::listener
 
     /**
      * Start a new screen.
+     * The screen is now owned by the engine.
      */
-    void start_screen(std::unique_ptr<screen> scr);
+    void start_screen(screen* scr);
 
     /**
      * Close the running screen.

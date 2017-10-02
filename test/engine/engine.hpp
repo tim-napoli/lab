@@ -129,7 +129,7 @@ class EngineTestSuite : public CxxTest::TestSuite {
 
     void testEngineTicks() {
         engine::engine engine("test-ticker", 400, 300, false, 60);
-        engine.start_screen(std::unique_ptr<engine::screen>(new fake_screen()));
+        engine.start_screen(new fake_screen());
 
         try {
             engine.start();
@@ -155,7 +155,7 @@ class EngineTestSuite : public CxxTest::TestSuite {
 
     void testEngineWindowResize() {
         engine::engine engine("test-window", 400, 300, false, 60);
-        engine.start_screen(std::unique_ptr<engine::screen>(new fake_screen()));
+        engine.start_screen(new fake_screen());
         window_monitor monitor;
 
         engine._window.register_listener(&monitor);
@@ -188,7 +188,7 @@ class EngineTestSuite : public CxxTest::TestSuite {
 
     void testEngineKeyboard() {
         engine::engine engine("test-keyboard", 400, 300, false, 60);
-        engine.start_screen(std::unique_ptr<engine::screen>(new fake_screen()));
+        engine.start_screen(new fake_screen());
         keyboard_monitor monitor;
 
         engine._keyboard.register_listener(&monitor);

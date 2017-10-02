@@ -33,6 +33,8 @@ class screen : public event::listener
 
 {
   public:
+    virtual ~screen() { }
+
     virtual void start(engine_interface* intf) throw(util::exception) = 0;
 
     virtual void update(engine_interface* intf) throw(util::exception) = 0;

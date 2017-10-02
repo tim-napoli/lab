@@ -79,8 +79,8 @@ void engine::stop() throw(util::exception) {
     glfwTerminate();
 }
 
-void engine::start_screen(std::unique_ptr<screen> scr) {
-    _screen_manager.push_screen(std::move(scr));
+void engine::start_screen(screen* scr) {
+    _screen_manager.push_screen(scr);
 }
 
 void engine::close_screen() {

@@ -9,7 +9,7 @@ int main(void) {
     try {
         engine.start();
         engine.start_screen(
-            std::unique_ptr<engine::screen>(new screen())
+            new screen()
         );
         engine.run();
         engine.stop();

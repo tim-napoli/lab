@@ -17,7 +17,7 @@ class screen;
  */
 class engine_interface {
   public:
-    virtual void start_screen(std::unique_ptr<screen> scr) = 0;
+    virtual void start_screen(screen* scr) = 0;
 
     virtual void close_screen() = 0;
 

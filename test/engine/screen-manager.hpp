@@ -78,13 +78,13 @@ class ScreenManagerTestSuite : public CxxTest::TestSuite {
         source.register_listener(&manager);
 
         test_screen* scr_a = new test_screen();
-        manager.push_screen(std::unique_ptr<engine::screen>(scr_a));
+        manager.push_screen(scr_a);
         TS_ASSERT(!scr_a->is_started());
         manager.update(NULL);
         TS_ASSERT(scr_a->is_started());
 
         test_screen* scr_b = new test_screen();
-        manager.push_screen(std::unique_ptr<engine::screen>(scr_b));
+        manager.push_screen(scr_b);
         manager.update(NULL);
 
         source.send_event(event::event(test_source::events::hello));
