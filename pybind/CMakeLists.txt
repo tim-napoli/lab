@@ -9,3 +9,13 @@ pybind11_add_module(labutil MODULE util.cpp)
 
 pybind11_add_module(labevent MODULE event.cpp)
 target_link_libraries(labevent PRIVATE lab-event)
+
+pybind11_add_module(labengine MODULE engine.cpp)
+target_link_libraries(
+    labengine PRIVATE
+    lab-engine
+    lab-event
+    ${OPENGL_gl_LIBRARY}
+    ${GLFW_LIBRARIES}
+    ${GLEW_LIBRARIES}
+)
