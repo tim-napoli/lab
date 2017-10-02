@@ -10,6 +10,12 @@ The Lab Engine library is intended to be simple.
 
 ## Dependencies
 
+### Programs
+
+        g++ with C++11 support
+        cmake
+        python3
+
 ### C++ dependencies
 
         libglfw3-dev
@@ -22,4 +28,25 @@ The Lab Engine library is intended to be simple.
         pyqt5
         pyqt5.qtopengl
         PyGLM (install with pip3 : sudo pip3 install PyGLM --pre)
+
+## Installation
+
+    After having installed every dependencies, clone the repository:
+
+        git clone --recursive https://github.com/tim-napoli/lab
+
+    I advise you to create a specific python environment for the project:
+
+        python3 -m venv pyenv
+        source pyenv/bin/activate
+        # Install dependencies using pip
+
+    Next, you just need to build the project using CMake:
+
+        mkdir build
+        cd build
+        cmake ..
+        make -j4
+
+    Easy !
 
