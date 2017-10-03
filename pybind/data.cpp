@@ -6,7 +6,7 @@ using namespace lab;
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(labdata, m) {
+PYBIND11_MODULE(data, m) {
     m.doc() = "lab::data python binding.";
 
     py::class_<data::manifest>(m, "manifest")

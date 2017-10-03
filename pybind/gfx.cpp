@@ -82,7 +82,7 @@ class py_pipeline : public gfx::pipeline {
     }
 };
 
-PYBIND11_MODULE(labgfx, m) {
+PYBIND11_MODULE(gfx, m) {
     m.doc() = "lab::gfx python binding.";
 
     py::class_<gfx::renderer> gfx_renderer(m, "renderer");

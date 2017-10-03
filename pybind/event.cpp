@@ -23,7 +23,7 @@ class py_listener : public event::listener {
     }
 };
 
-PYBIND11_MODULE(labevent, m) {
+PYBIND11_MODULE(event, m) {
     m.doc() = "lab::event python binding.";
 
     py::class_<event::event>(m, "event")

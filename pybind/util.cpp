@@ -6,7 +6,7 @@ using namespace lab;
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(labutil, m) {
+PYBIND11_MODULE(util, m) {
     m.doc() = "lab::util python binding.";
 
     py::class_<util::exception>(m, "exception")

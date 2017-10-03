@@ -8,7 +8,7 @@ using namespace lab;
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(labmath, m) {
+PYBIND11_MODULE(math, m) {
     m.doc() = "lab::math python binding.";
 
     py::class_<math::box>(m, "box")

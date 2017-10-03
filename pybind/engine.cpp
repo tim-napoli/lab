@@ -56,7 +56,7 @@ class py_screen : public engine::screen {
     }
 };
 
-PYBIND11_MODULE(labengine, m) {
+PYBIND11_MODULE(engine, m) {
     m.doc() = "lab::util python binding.";
 
     py::class_<engine::engine>(m, "engine")
