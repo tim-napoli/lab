@@ -29,9 +29,7 @@ bool glm_mat_load(handle src, M& value) {
                 return false;
             }
             value[c][v] = dvalue;
-            Py_DECREF(col_value);
         }
-        Py_DECREF(column);
     }
 
     return true;
@@ -113,7 +111,6 @@ bool glm_vec_load(handle src, M& value) {
             return false;
         }
         value[i] = dvalue;
-        Py_DECREF(vec_value);
     }
 
     return true;
