@@ -81,12 +81,18 @@ PYBIND11_MODULE(labengine, m) {
         ;
 
     py::class_<engine::window> engine_window(m, "window");
+    engine_window
+        .def_static("get_id", &engine::window::get_id)
+        ;
     py::enum_<engine::window::events>(engine_window, "events")
         .value("closed",    engine::window::events::closed)
         .value("resized",   engine::window::events::resized)
         ;
 
     py::class_<engine::keyboard> engine_keyboard(m, "keyboard");
+    engine_keyboard
+        .def_static("get_id", &engine::keyboard::get_id)
+        ;
     py::enum_<engine::keyboard::events>(engine_keyboard, "events")
         .value("key_pressed", engine::keyboard::events::key_pressed)
         .value("key_repeated", engine::keyboard::events::key_repeated)
