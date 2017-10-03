@@ -13,7 +13,8 @@ PYBIND11_MODULE(labdata, m) {
         .def(py::init<>())
         .def("get_texture",     &data::manifest::get_texture)
         .def("get_image",       &data::manifest::get_image)
-        .def("get_image_ptr",   &data::manifest::get_image_ptr)
+        .def("get_image_ptr",   &data::manifest::get_image_ptr,
+             py::return_value_policy::reference)
         .def("get_animation",   &data::manifest::get_animation)
         .def("destroy",         &data::manifest::destroy)
         .def_static("load",     &data::manifest::load)
