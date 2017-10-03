@@ -98,6 +98,84 @@ struct type_caster<glm::mat2> {
     }
 };
 
+// glm::vec -------------------------------------------------------------------
+
+template <typename M, int D>
+bool glm_vec_load(handle src, M& value) {
+    PyObject* vec = src.ptr();
+    for (size_t i = 0; i < D; i++) {
+        PyObject* vec_value = PyList_GetItem(vec, i);
+        if (vec_value == NULL) {
+            return false;
+        }
+        double dvalue = PyFloat_AsDouble(vec_value);
+        if (PyErr_Occurred() != NULL) {
+            return false;
+        }
+        value[i] = dvalue;
+        Py_DECREF(vec_value);
+    }
+
+    return true;
+}
+
+template <typename M, int D>
+handle glm_vec_cast(M src) {
+    PyObject* list = PyList_New(D);
+    for (size_t i = 0; i < D; i++) {
+        PyList_SetItem(list, i, PyFloat_FromDouble(src[i]));
+    }
+    return list;
+}
+
+template <>
+struct type_caster<glm::vec4> {
+  public:
+    PYBIND11_TYPE_CASTER(glm::vec4, _("glm_vec4"));
+
+    bool load(handle src, bool) {
+        return glm_vec_load<glm::vec4, 4>(src, value);
+    }
+
+    static handle cast(glm::vec4 src, return_value_policy policy,
+                       handle parent)
+    {
+        return glm_vec_cast<glm::vec4, 4>(src);
+    }
+};
+
+template <>
+struct type_caster<glm::vec3> {
+  public:
+    PYBIND11_TYPE_CASTER(glm::vec3, _("glm_vec3"));
+
+    bool load(handle src, bool) {
+        return glm_vec_load<glm::vec3, 3>(src, value);
+    }
+
+    static handle cast(glm::vec3 src, return_value_policy policy,
+                       handle parent)
+    {
+        return glm_vec_cast<glm::vec3, 3>(src);
+    }
+};
+
+template <>
+struct type_caster<glm::vec2> {
+  public:
+    PYBIND11_TYPE_CASTER(glm::vec2, _("glm_vec2"));
+
+    bool load(handle src, bool) {
+        return glm_vec_load<glm::vec2, 2>(src, value);
+    }
+
+    static handle cast(glm::vec2 src, return_value_policy policy,
+                       handle parent)
+    {
+        return glm_vec_cast<glm::vec2, 2>(src);
+    }
+};
+
 // ----------------------------------------------------------------------------
 
 }}
