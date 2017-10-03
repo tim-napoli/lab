@@ -11,11 +11,14 @@ PYBIND11_MODULE(labdata, m) {
 
     py::class_<data::manifest>(m, "manifest")
         .def(py::init<>())
-        .def("get_texture",     &data::manifest::get_texture)
-        .def("get_image",       &data::manifest::get_image)
+        .def("get_texture",     &data::manifest::get_texture,
+             py::return_value_policy::reference)
+        .def("get_image",       &data::manifest::get_image,
+             py::return_value_policy::reference)
         .def("get_image_ptr",   &data::manifest::get_image_ptr,
              py::return_value_policy::reference)
-        .def("get_animation",   &data::manifest::get_animation)
+        .def("get_animation",   &data::manifest::get_animation,
+             py::return_value_policy::reference)
         .def("destroy",         &data::manifest::destroy)
         .def_static("load",     &data::manifest::load)
         ;

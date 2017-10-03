@@ -10,6 +10,7 @@
 #include "lab/gfx/draw-pass.hpp"
 #include "lab/gfx/post-process-pass.hpp"
 #include "lab/gfx/pipeline.hpp"
+#include "lab/gfx/light.hpp"
 #include "lab/gfx/texture.hpp"
 #include "lab/gfx/image.hpp"
 #include "lab/gfx/animation.hpp"
@@ -128,21 +129,29 @@ PYBIND11_MODULE(labgfx, m) {
 
     py::class_<gfx::pass, py_pass> gfx_pass(m, "pass");
     gfx_pass
-        .def(py::init<gfx::program&, gfx::framebuffer*>())
-        .def("get_output",  &gfx::pass::get_output)
-        .def("get_program", &gfx::pass::get_program)
+        .def(py::init<gfx::program&, gfx::framebuffer*>(),
+             py::keep_alive<1, 3>())
+        .def("get_output",  &gfx::pass::get_output,
+             py::return_value_policy::reference
+        )
+        .def("get_program", &gfx::pass::get_program,
+             py::return_value_policy::reference
+        )
         .def("render",      &gfx::pass::render)
         ;
 
     py::class_<gfx::draw_pass>(m, "draw_pass", gfx_pass)
-        .def(py::init<gfx::program&, gfx::framebuffer*>())
+        .def(py::init<gfx::program&, gfx::framebuffer*>(),
+             py::keep_alive<1, 3>())
         .def("add_drawable",    &gfx::draw_pass::add_drawable)
         .def("render",          &gfx::draw_pass::render)
         ;
 
     py::class_<gfx::post_process_pass>(m, "post_process_pass", gfx_pass)
-        .def(py::init<gfx::program&, gfx::framebuffer*, math::box>())
-        .def("add_input",    &gfx::post_process_pass::add_input)
+        .def(py::init<gfx::program&, gfx::framebuffer*, math::box>(),
+             py::keep_alive<1, 3>(), py::keep_alive<1, 4>())
+        .def("add_input",    &gfx::post_process_pass::add_input,
+             py::keep_alive<1, 3>())
         .def("render",       &gfx::post_process_pass::render)
         ;
 
@@ -155,10 +164,22 @@ PYBIND11_MODULE(labgfx, m) {
 
     py::class_<gfx::pipeline, py_pipeline>(m, "pipeline", gfx_renderer)
         .def(py::init<int, int>())
-        .def("add_draw_pass",           &gfx::pipeline::add_draw_pass)
-        .def("get_draw_pass",           &gfx::pipeline::get_draw_pass)
-        .def("add_post_process_pass",   &gfx::pipeline::add_post_process_pass)
+        .def("add_draw_pass",           &gfx::pipeline::add_draw_pass,
+             py::keep_alive<1, 3>())
+        .def("get_draw_pass",           &gfx::pipeline::get_draw_pass,
+             py::return_value_policy::reference)
+        .def("add_post_process_pass",   &gfx::pipeline::add_post_process_pass,
+             py::keep_alive<1, 3>())
         .def("render",                  &gfx::pipeline::render)
+        ;
+
+    py::class_<gfx::light>(m, "light")
+        .def(py::init())
+        .def(py::init<glm::vec3, float, glm::vec3>())
+        .def("get_position",    &gfx::light::get_position)
+        .def("get_radius",      &gfx::light::get_radius)
+        .def("get_color",       &gfx::light::get_color)
+        .def("set_position",    &gfx::light::set_position)
         ;
 
     py::class_<gfx::texture>(m, "texture")
@@ -187,7 +208,10 @@ PYBIND11_MODULE(labgfx, m) {
 
     py::class_<gfx::image_drawable>(m, "image_drawable", gfx_drawable)
         .def(py::init())
-        .def(py::init<glm::mat3, const gfx::image*, std::vector<std::string>>())
+        .def(
+            py::init<glm::mat3, const gfx::image*, std::vector<std::string>>(),
+            py::keep_alive<1, 3>()
+        )
         .def("bind", &gfx::image_drawable::bind)
         .def("draw", &gfx::image_drawable::draw)
         ;
