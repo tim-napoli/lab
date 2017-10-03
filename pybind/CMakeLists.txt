@@ -19,3 +19,10 @@ target_link_libraries(
     ${GLFW_LIBRARIES}
     ${GLEW_LIBRARIES}
 )
+
+pybind11_add_module(labmath MODULE math.cpp)
+target_link_libraries(
+    labmath PRIVATE
+    lab-math
+)
+
