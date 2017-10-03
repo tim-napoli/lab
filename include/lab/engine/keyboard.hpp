@@ -25,7 +25,7 @@ class keyboard : public event::source
      * Key codes used by the engine. Must exactly follow the GLFW mapping
      * (see GLFW/glfw3.h).
      */
-    enum {
+    enum key_codes {
     // Key codes enum ---------------------------------------------------------
         key_unknown           =  -1,
         key_space             =  32,
