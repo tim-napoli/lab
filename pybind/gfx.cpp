@@ -122,8 +122,8 @@ PYBIND11_MODULE(labgfx, m) {
         .def("set_uniform_vec3",        &gfx::program::set_uniform_vec3)
         .def("set_uniform_float",       &gfx::program::set_uniform_float)
         .def("destroy",                 &gfx::program::destroy)
+        .def_static("load",             &gfx::program::load)
         ;
-    m.def("program_load", &gfx::program::load);
 
     py::class_<gfx::pass, py_pass> gfx_pass(m, "pass");
     gfx_pass
@@ -165,8 +165,8 @@ PYBIND11_MODULE(labgfx, m) {
         .def("get_texture_id",  &gfx::texture::get_texture_id)
         .def("get_dimensions",  &gfx::texture::get_dimensions)
         .def("destroy",         &gfx::texture::destroy)
+        .def_static("load",     &gfx::texture::load)
         ;
-    m.def("texture_load", &gfx::texture::load);
 
     py::class_<gfx::animation>(m, "animation")
         .def(py::init())

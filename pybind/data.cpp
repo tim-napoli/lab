@@ -16,7 +16,7 @@ PYBIND11_MODULE(labdata, m) {
         .def("get_image_ptr",   &data::manifest::get_image_ptr)
         .def("get_animation",   &data::manifest::get_animation)
         .def("destroy",         &data::manifest::destroy)
+        .def_static("load",     &data::manifest::load)
         ;
-    m.def("manifest_load",  &data::manifest::load);
 }
 
