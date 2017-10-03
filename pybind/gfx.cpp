@@ -1,4 +1,5 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 #include "glm-cast.hpp"
 #include "lab/gfx/renderer.hpp"
 #include "lab/gfx/drawable.hpp"
