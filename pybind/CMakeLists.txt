@@ -26,3 +26,13 @@ target_link_libraries(
     lab-math
 )
 
+pybind11_add_module(labgfx MODULE gfx.cpp)
+target_link_libraries(
+    labgfx PRIVATE
+    lab-math
+    lab-gfx
+    ${OPENGL_gl_LIBRARY}
+    ${GLEW_LIBRARIES}
+    ${SOIL_LIBRARIES}
+)
+
