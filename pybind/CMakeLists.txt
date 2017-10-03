@@ -35,4 +35,14 @@ target_link_libraries(
     ${GLEW_LIBRARIES}
     ${SOIL_LIBRARIES}
 )
+pybind11_add_module(labdata MODULE data.cpp)
+target_link_libraries(
+    labdata PRIVATE
+    lab-data
+    lab-gfx
+    lab-json
+    lab-parser
+    ${GLEW_LIBRARIES}
+    ${SOIL_LIBRARIES}
+)
 
