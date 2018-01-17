@@ -1,5 +1,6 @@
 #include "lab/data/loaders.hpp"
 #include "lab/json/json.hpp"
+#include "lab/util/string.hpp"
 
 namespace lab { namespace data {
 
@@ -36,9 +37,9 @@ load_frame(const std::map<std::string, gfx::image>& images,
     gfx::image image;
     auto it = images.find(json_node["image"].get_value().get());
     if (it == images.end()) {
-        throw util::exception::build_formatted(
+        throw util::exception(util::format(
             "cannot find image {}", json_node["image"].get_value().get()
-        );
+        ));
     }
     image = it->second;
 

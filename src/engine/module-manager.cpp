@@ -1,4 +1,5 @@
 #include "lab/engine/module-manager.hpp"
+#include "lab/util/string.hpp"
 
 namespace lab { namespace engine {
 
@@ -23,10 +24,10 @@ void module_manager::start() throw(util::exception) {
         try {
             (*it)->start();
         } catch (util::exception ex) {
-            throw util::exception::build_formatted(
+            throw util::exception(util::format(
                 "Engine cannot start module '", (*it)->get_name(), "': ",
                 ex.get_message()
-            );
+            ));
         }
     }
 }
@@ -36,10 +37,10 @@ void module_manager::update() throw(util::exception) {
         try {
             (*it)->update();
         } catch (util::exception ex) {
-            throw util::exception::build_formatted(
+            throw util::exception(util::format(
                 "Engine cannot update module '", (*it)->get_name(), "': ",
                 ex.get_message()
-            );
+            ));
         }
     }
 }
@@ -49,10 +50,10 @@ void module_manager::stop() throw(util::exception) {
         try {
             (*it)->stop();
         } catch (util::exception ex) {
-            throw util::exception::build_formatted(
+            throw util::exception(util::format(
                 "Engine cannot stop module '", (*it)->get_name(), "': ",
                 ex.get_message()
-            );
+            ));
         }
     }
 }

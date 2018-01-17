@@ -1,4 +1,5 @@
 #include "lab/gfx/texture.hpp"
+#include "lab/util/string.hpp"
 #include <SOIL/SOIL.h>
 
 namespace lab { namespace gfx {
@@ -38,9 +39,9 @@ texture texture::load(const std::string& path) throw(util::exception) {
         SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
     );
     if (tex == 0) {
-        throw util::exception::build_formatted(
+        throw util::exception(util::format(
             "cannot load texture '{}'", path
-        );
+        ));
     }
     return texture(tex);
 }

@@ -1,6 +1,7 @@
 #include <fstream>
 #include <GL/glew.h>
 #include "lab/gfx/program.hpp"
+#include "lab/util/string.hpp"
 
 namespace lab { namespace gfx {
 
@@ -39,10 +40,10 @@ GLint program::get_uniform_location(const std::string& name) const
 {
     GLint loc = glGetUniformLocation(_program_id, name.c_str());
     if (loc < 0) {
-        throw util::exception::build_formatted(
+        throw util::exception(util::format(
             "Requesting unavailable uniform '{}' in shader program",
             name
-        );
+        ));
     }
     return loc;
 }
@@ -112,10 +113,10 @@ static void load_and_compile_shader(GLuint shader, const std::string& path)
 
     std::ifstream file(path, std::ifstream::in);
     if (!file.is_open()) {
-        throw util::exception::build_formatted(
+        throw util::exception(util::format(
             "Cannot open shader file '{}'",
             path
-        );
+        ));
     }
     load_shader_source(shader, file);
 
@@ -125,10 +126,10 @@ static void load_and_compile_shader(GLuint shader, const std::string& path)
         glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &shader_info_len);
         char* info_log = new char[shader_info_len];
         glGetShaderInfoLog(shader, shader_info_len, NULL, info_log);
-        util::exception ex = util::exception::build_formatted(
+        util::exception ex = util::exception(util::format(
             "Shader '{}' compilation failure: {}",
             path, info_log
-        );
+        ));
         delete[] info_log;
         throw ex;
     }
@@ -155,10 +156,10 @@ program program::load(const std::string& vertex_path,
         glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &info_log_len);
         char* info_log = new char[info_log_len];
         glGetProgramInfoLog(program_id, info_log_len, NULL, info_log);
-        util::exception ex = util::exception::build_formatted(
+        util::exception ex = util::exception(util::format(
             "Program compilation failure: {}",
             info_log
-        );
+        ));
         delete[] info_log;
         throw ex;
     }

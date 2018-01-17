@@ -1,4 +1,5 @@
 #include "lab/gfx/pipeline.hpp"
+#include "lab/util/string.hpp"
 
 namespace lab { namespace gfx {
 
@@ -57,9 +58,9 @@ void pipeline::add_draw_pass(const std::string& name, draw_pass* p)
 {
     auto it = _draw_passes.find(name);
     if (it != _draw_passes.end()) {
-        throw util::exception::build_formatted(
+        throw util::exception(util::format(
             "The pipeline already has a draw pass '{}'", name
-        );
+        ));
     }
     _draw_passes.emplace(name, p);
     _draw_passes_order.push_back(p);
@@ -70,9 +71,9 @@ draw_pass* pipeline::get_draw_pass(const std::string& name)
 {
     auto it = _draw_passes.find(name);
     if (it == _draw_passes.end()) {
-        throw util::exception::build_formatted(
+        throw util::exception(util::format(
             "The pipeline doesn't have a draw pass '{}'", name
-        );
+        ));
     }
     return it->second;
 }
@@ -83,9 +84,9 @@ void pipeline::add_post_process_pass(const std::string& name,
 {
     auto it = _post_process_passes.find(name);
     if (it != _post_process_passes.end()) {
-        throw util::exception::build_formatted(
+        throw util::exception(util::format(
             "The pipeline already has a post process pass '{}'", name
-        );
+        ));
     }
     _post_process_passes.emplace(name, p);
     _post_process_passes_order.push_back(p);
@@ -117,10 +118,10 @@ void pipeline::render() throw(util::exception) {
         try {
             (*it)->render();
         } catch (util::exception ex) {
-            throw util::exception::build_formatted(
+            throw util::exception(util::format(
                 "Pipeline draw pass '{}' rendering error: {}",
                 get_name_of_draw_pass(*it), ex.get_message()
-            );
+            ));
         }
     }
 
@@ -133,10 +134,10 @@ void pipeline::render() throw(util::exception) {
         try {
             (*it)->render();
         } catch (util::exception ex) {
-            throw util::exception::build_formatted(
+            throw util::exception(util::format(
                 "Pipeline post-process pass '{}' rendering error: {}",
                 get_name_of_post_process_pass(*it), ex.get_message()
-            );
+            ));
         }
     }
 }

@@ -33,7 +33,7 @@ const util::value& event::get_value(const std::string& name) const
 {
     auto it = _values.find(name);
     if (it == _values.end()) {
-        throw util::exception("coudln't find event value \"" + name + "\"");
+        throw util::exception("couldn't find event value \"" + name + "\"");
     }
     return it->second;
 }

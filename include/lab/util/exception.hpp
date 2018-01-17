@@ -30,59 +30,6 @@ class exception : public std::exception{
     const std::string& get_message() const {return _message;}
 
     const char* what() const noexcept { return _message.c_str(); }
-
-    /**
-     * Build an exception using a python-style format string and a variadic
-     * parameters list.
-     * @code
-     *      throw lab::util::exception::build_formatted(
-     *          "Hello {}, you're {} years old",
-     *          "John", 32
-     *      );
-     * @endcode
-     */
-    template<typename First>
-    static exception build_formatted(const std::string& fmt, First first)
-    {
-        exception next_exception;
-        std::ostringstream result;
-
-        for (auto it = fmt.begin(); it != fmt.end(); it++) {
-            if (*it == '{' && *(it + 1) == '}') {
-                result << first;
-                it++;
-            } else {
-                result << *it;
-            }
-        }
-
-        return exception(result.str());
-    }
-
-    template<typename First, typename... Args>
-    static exception build_formatted(const std::string& fmt,
-                                     First first, Args... args)
-    {
-        exception next_exception;
-        std::ostringstream result;
-
-        for (auto it = fmt.begin(); it != fmt.end(); it++) {
-            if (*it == '{' && *(it + 1) == '}') {
-                result << first;
-                next_exception = exception::build_formatted(
-                    fmt.substr(std::distance(fmt.begin(), it + 2),
-                               std::string::npos),
-                    args...
-                );
-                result << next_exception.get_message();
-                return exception(result.str());
-            } else {
-                result << *it;
-            }
-        }
-        return exception(result.str());
-    }
-
 };
 
 }}

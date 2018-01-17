@@ -2,6 +2,7 @@
 #include <fstream>
 #include "lab/json/json.hpp"
 #include "lab/parser/common.hpp"
+#include "lab/util/string.hpp"
 
 namespace lab { namespace json {
 
@@ -49,9 +50,9 @@ const json& json::get_member(const std::string& name) const
     assert(_tag == json::object);
     auto it = _object.find(name);
     if (it == _object.end()) {
-        throw util::exception::build_formatted(
+        throw util::exception(util::format(
             "json object has no member ", name
-        );
+        ));
     }
 
     return it->second;
@@ -63,9 +64,9 @@ json& json::get_member(const std::string& name)
     assert(_tag == json::object);
     auto it = _object.find(name);
     if (it == _object.end()) {
-        throw util::exception::build_formatted(
+        throw util::exception(util::format(
             "json object has no member ", name
-        );
+        ));
     }
 
     return it->second;
@@ -83,9 +84,9 @@ const json& json::get_element(int index) const
     try {
         return _array.at(index);
     } catch(std::out_of_range) {
-        throw util::exception::build_formatted(
+        throw util::exception(util::format(
             "json array has no index ", index
-        );
+        ));
     }
 }
 
@@ -96,9 +97,9 @@ json& json::get_element(int index)
     try {
         return _array.at(index);
     } catch(std::out_of_range) {
-        throw util::exception::build_formatted(
+        throw util::exception(util::format(
             "json array has no index ", index
-        );
+        ));
     }
 }
 
@@ -115,9 +116,9 @@ void json::set_element(int index, const json& member)
     try {
         _array.at(index) = member;
     } catch(std::out_of_range) {
-        throw util::exception::build_formatted(
+        throw util::exception(util::format(
             "json array has no index ", index
-        );
+        ));
     }
 }
 
@@ -408,9 +409,9 @@ json json::parse(const std::string& path)
     std::ifstream input;
     input.open(path);
     if (!input.is_open()) {
-        throw util::exception::build_formatted(
+        throw util::exception(util::format(
             "cannot open json file {}", path
-        );
+        ));
     }
     return json::parse(input);
 }

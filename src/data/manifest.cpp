@@ -3,6 +3,7 @@
 #include "lab/json/json.hpp"
 #include "lab/data/manifest.hpp"
 #include "lab/data/loaders.hpp"
+#include "lab/util/string.hpp"
 
 namespace lab { namespace data {
 
@@ -22,9 +23,9 @@ gfx::texture manifest::get_texture(const std::string& texture) const
 {
     auto it = _textures.find(texture);
     if (it == _textures.end()) {
-        throw util::exception::build_formatted(
+        throw util::exception(util::format(
             "cannot find texture {}", texture
-        );
+        ));
     }
     return it->second;
 }
@@ -34,9 +35,9 @@ gfx::image manifest::get_image(const std::string& image) const
 {
     auto it = _images.find(image);
     if (it == _images.end()) {
-        throw util::exception::build_formatted(
+        throw util::exception(util::format(
             "cannot find image {}", image
-        );
+        ));
     }
     return it->second;
 }
@@ -46,9 +47,9 @@ const gfx::image* manifest::get_image_ptr(const std::string& image) const
 {
     auto it = _images.find(image);
     if (it == _images.end()) {
-        throw util::exception::build_formatted(
+        throw util::exception(util::format(
             "cannot find image {}", image
-        );
+        ));
     }
     return &it->second;
 }
@@ -58,9 +59,9 @@ gfx::animation manifest::get_animation(const std::string& animation) const
 {
     auto it = _animations.find(animation);
     if (it == _animations.end()) {
-        throw util::exception::build_formatted(
+        throw util::exception(util::format(
             "cannot find animation {}", animation
-        );
+        ));
     }
     return it->second;
 }
@@ -97,9 +98,9 @@ manifest manifest::load(const std::string& manifest_path)
         try {
             manifest._textures[texture_name] = load_texture(texture_path);
         } catch(util::exception ex) {
-            throw util::exception::build_formatted(
+            throw util::exception(util::format(
                 "error loading texture {}: {}", texture_name, ex.get_message()
-            );
+            ));
         }
     }
 
@@ -115,9 +116,9 @@ manifest manifest::load(const std::string& manifest_path)
                 manifest._textures, image_path
             );
         } catch(util::exception ex) {
-            throw util::exception::build_formatted(
+            throw util::exception(util::format(
                 "error loading image {}: {}", image_name, ex.get_message()
-            );
+            ));
         }
     }
 
@@ -133,9 +134,9 @@ manifest manifest::load(const std::string& manifest_path)
                 manifest._images, anim_path
             );
         } catch(util::exception ex) {
-            throw util::exception::build_formatted(
+            throw util::exception(util::format(
                 "error loading animation {}: {}", anim_name, ex.get_message()
-            );
+            ));
         }
     }
 
